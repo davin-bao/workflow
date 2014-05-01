@@ -29,6 +29,7 @@ class WorkflowServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		//
+        $this->registerCommands();
 	}
 
 	/**
@@ -40,5 +41,18 @@ class WorkflowServiceProvider extends ServiceProvider {
 	{
 		return array();
 	}
+
+    public function registerCommands()
+    {
+
+        $this->app['command.workflow.migration'] = $this->app->share(function($app)
+        {
+            return new MigrationCommand($app);
+        });
+
+        $this->commands(
+            'command.workflow.migration'
+        );
+    }
 
 }
