@@ -57,7 +57,7 @@ class Workflow
    * @deprecated
    * @return Illuminate\View\View
    */
-  public function makeFlowForm($flow)
+  public function makeFlowForm($flow = null)
   {
     //var_dump($this->_app['config']);exit;
     return $this->_app['view']->make( $this->_app['config']->get('workflow::flow_form'), compact( 'flow') );

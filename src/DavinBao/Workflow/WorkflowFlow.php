@@ -26,9 +26,8 @@ class WorkFlowFlow extends Ardent
    * @var array
    */
   public static $rules = array(
-    'name' => 'required|between:4,128'
+    'flow_name' => 'required|between:4,128'
   );
-
   /**
    * Creates a new instance of the model
    */
@@ -43,7 +42,7 @@ class WorkFlowFlow extends Ardent
    */
   public function nodes()
   {
-    return $this->hasMany(Config::get('workflow::nodes_table'));
+    return $this->hasMany(Config::get('workflow::node'));
   }
 
   /**

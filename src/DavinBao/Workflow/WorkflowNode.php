@@ -26,7 +26,7 @@ class WorkFlowNode extends Ardent
    * @var array
    */
   public static $rules = array(
-    'name' => 'required|between:4,128'
+    'node_name' => 'required|between:4,128'
   );
 
   /**
@@ -42,7 +42,7 @@ class WorkFlowNode extends Ardent
    */
   public function flow()
   {
-    return $this->belongsTo(Config::get('workflow::flows_table'));
+    return $this->belongsTo(Config::get('workflow::flow'));
   }
 
   /**
@@ -58,7 +58,7 @@ class WorkFlowNode extends Ardent
    */
   public function roles()
   {
-    return $this->belongsToMany(Config::get('workflow.roles_table'), Config::get('workflow::node_role_table'));
+    return $this->belongsToMany(Config::get('workflow.role'), Config::get('workflow::node_role_table'));
   }
 
   /**

@@ -32,7 +32,7 @@
                         <label class="span2 control-label" for="flow_name">{{{ Lang::get('workflow::workflow.flow_name') }}}</label>
                         <div class="span6">
                           <div class="input-group input-group-sm">
-                            <input type="text" class="form-control" name="flow_name" style="margin: 0px;" id="flow_name" value="{{{ Input::old('name', isset($flow) ? $flow->name : null) }}}">
+                            <input type="text" class="form-control" name="flow_name" style="margin: 0px;" id="flow_name" value="{{{ Input::old('flow_name', isset($flow) ? $flow->flow_name : null) }}}">
                             <span class="input-group-btn">
                               <button data-url="@if(isset($flow)){{ URL::to('admin/flows/' . $flow->id . '/edit') }}@else{{{ URL::to('admin/flows/create') }}}?_token={{{ csrf_token() }}}@endif"
                                       class="btn btn-primary btn-flat" name="flow_save" type="button"><i class="fa fa-save"></i> {{{ Lang::get('workflow::button.save') }}}</button>
@@ -83,11 +83,11 @@
     });
 
     $('button[name="flow_save"]').click(function(){
-      var name = $('input[name="flow_name"]').val();
+      var flow_name = $('input[name="flow_name"]').val();
       var saveUrl = $(this).attr('data-url');
       $.ajax({
         url: saveUrl,
-        data: { name: name },
+        data: { flow_name: flow_name },
         type: 'POST',
         dataType : "json"
       }).done(function( data ) {
@@ -105,15 +105,17 @@
     });
 
     $('#node-add').click(function(){
+        $('.todo-list').append(getNodeLoadingList());
       var flowId = $('input[name="flow_id"]').val();
-      var saveUrl = "{{{ URL::to('admin/flows/') }}}"+flowId+"/createnode?_token={{{ csrf_token() }}}";
+      var saveUrl = "{{{ URL::to('admin/flows/') }}}/"+flowId+"/createnode?_token={{{ csrf_token() }}}";
       $.ajax({
         url: saveUrl,
         type: 'POST',
         dataType : "json"
       }).done(function( data ) {
         if(data.result){
-          $('.todo-list').append(getNodeList(data.id, data.name, data.users, data.roles));
+            $('.todo-list .loading').remove();
+          $('.todo-list').append(getNodeList(data.id, data.node_name, data.users, data.roles));
           addModifyNodeEvent(data.id);
           //showSuccessMsg(data.message);
         }else{
@@ -150,6 +152,10 @@
       });
     }
 
+
+    function getNodeLoadingList(){
+        return '<li class="loading"><i class="ion-loading-c"></i></li>';
+    }
 
     function getNodeList(id, name, users, roles){
       return '<li>\

@@ -16,7 +16,7 @@ class WorkflowSetupTables extends Migration {
         Schema::create('flows', function($table)
         {
             $table->increments('id')->unsigned();
-            $table->string('name')->unique();
+            $table->string('flow_name')->unique();
             $table->timestamps();
         });
 
@@ -24,9 +24,9 @@ class WorkflowSetupTables extends Migration {
         Schema::create('nodes', function($table)
         {
             $table->increments('id')->unsigned();
-            $table->string('name');
+            $table->string('node_name');
             $table->integer('flow_id')->unsigned();
-            $table->integer('order')->unsigned();
+            $table->integer('orders')->unsigned();
             $table->timestamps();
             $table->foreign('flow_id')->references('id')->on('flows');
         });
@@ -58,7 +58,7 @@ class WorkflowSetupTables extends Migration {
             $table->integer('resource_id')->unsigned();
             $table->integer('flow_id')->unsigned();
             $table->integer('status')->unsigned();      //status has 3 state
-            $table->integer('node_order')->unsigned();
+            $table->integer('node_orders')->unsigned();
             $table->foreign('flow_id')->references('id')->on('flows');
         });
 
@@ -68,7 +68,7 @@ class WorkflowSetupTables extends Migration {
             $table->increments('id')->unsigned();
             $table->integer('resource_flow_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->integer('order')->unsigned();
+            $table->integer('orders')->unsigned();
             $table->text('comment');
             $table->boolean('result');
             $table->foreign('resource_flow_id')->references('id')->on('resource_flow');
