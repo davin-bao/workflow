@@ -29,8 +29,22 @@ class WorkflowServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		//
-        $this->registerCommands();
+      $this->registerWorkflow();
+      $this->registerCommands();
 	}
+
+  /**
+   * Register the application bindings.
+   *
+   * @return void
+   */
+  private function registerWorkflow()
+  {
+    $this->app->bind('workflow', function($app)
+    {
+      return new Workflow($app);
+    });
+  }
 
 	/**
 	 * Get the services provided by the provider.

@@ -40,11 +40,10 @@ class MigrationCommand extends Command {
      */
     public function fire()
     {
-        $roles_table = lcfirst($this->option('table'));
 
         $this->line('');
-        $this->info( "Tables: $roles_table, assigned_roles, permissions, permission_role" );
-        $message = "An migration that creates '$roles_table', 'assigned_roles', 'permissions', 'permission_role'".
+        $this->info( "Tables: flows, nodes, node_role, node_user, resource_flow, resource_node, resource_logs" );
+        $message = "An migration that creates 'flows', 'nodes', 'node_role', 'node_user', 'resource_flow', 'resource_node', 'resource_logs'".
             " tables will be created in app/database/migrations directory";
 
         $this->comment( $message );
@@ -55,7 +54,7 @@ class MigrationCommand extends Command {
             $this->line('');
 
             $this->info( "Creating migration..." );
-            if( $this->createMigration( $roles_table ) )
+            if( $this->createMigration() )
             {
                 $this->info( "Migration successfully created!" );
             }
@@ -69,6 +68,38 @@ class MigrationCommand extends Command {
             $this->line('');
 
         }
+    }
+
+    /**
+     * Create the migration
+     *
+     * @param  string $name
+     * @return bool
+     */
+    protected function createMigration()
+    {
+      $migration_file = $this->laravel->path."/database/migrations/".date('Y_m_d_His')."_workflow_setup_tables.php";
+      $app = app();
+      $output = $app['view']->make('workflow::generators.migration')->render();
+
+      if( ! file_exists( $migration_file ) )
+      {
+        $fs = fopen($migration_file, 'x');
+        if ( $fs )
+        {
+          fwrite($fs, $output);
+          fclose($fs);
+          return true;
+        }
+        else
+        {
+          return false;
+        }
+      }
+      else
+      {
+        return false;
+      }
     }
 
 }

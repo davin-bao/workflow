@@ -28,6 +28,7 @@ class WorkflowSetupTables extends Migration {
             $table->integer('flow_id')->unsigned();
             $table->integer('order')->unsigned();
             $table->timestamps();
+            $table->foreign('flow_id')->references('id')->on('flows');
         });
 
         // Creates the node_role (Many-to-Many relation) table
@@ -50,7 +51,7 @@ class WorkflowSetupTables extends Migration {
             $table->foreign('user_id')->references('id')->on('users'); // assumes a users table
         });
 
-        // Creates the resource_flow (Many-to-Many relation) table
+        // Creates the resource_flows (Many-to-Many relation) table
         Schema::create('resource_flow', function($table)
         {
             $table->increments('id')->unsigned();
@@ -70,11 +71,12 @@ class WorkflowSetupTables extends Migration {
             $table->integer('order')->unsigned();
             $table->text('comment');
             $table->boolean('result');
+            $table->foreign('resource_flow_id')->references('id')->on('resource_flow');
             $table->foreign('user_id')->references('id')->on('users');
         });
 
-        // Creates the assigned_roles (Many-to-Many relation) table
-        Schema::create('resource_log', function($table)
+        // Creates the resource_logs (One-to-Many relation) table
+        Schema::create('resource_logs', function($table)
         {
             $table->increments('id')->unsigned();
             $table->integer('resource_node_id')->unsigned();
@@ -91,20 +93,35 @@ class WorkflowSetupTables extends Migration {
      */
     public function down()
     {
-        Schema::table('assigned_roles', function(Blueprint $table) {
-            $table->dropForeign('assigned_roles_user_id_foreign');
-            $table->dropForeign('assigned_roles_role_id_foreign');
+        Schema::table('nodes', function(Blueprint $table) {
+          $table->dropForeign('nodes_flow_id_foreign');
+        });
+        Schema::table('node_role', function(Blueprint $table) {
+          $table->dropForeign('node_role_node_id_foreign');
+          $table->dropForeign('node_role_role_id_foreign');
+        });
+        Schema::table('node_user', function(Blueprint $table) {
+            $table->dropForeign('node_user_node_id_foreign');
+            $table->dropForeign('node_user_user_id_foreign');
+        });
+        Schema::table('resource_flow', function(Blueprint $table) {
+          $table->dropForeign('resource_flow_flow_id_foreign');
+        });
+        Schema::table('resource_node', function(Blueprint $table) {
+          $table->dropForeign('resource_node_resource_flow_id_foreign');
+          $table->dropForeign('resource_node_user_id_foreign');
+        });
+        Schema::table('resource_logs', function(Blueprint $table) {
+          $table->dropForeign('resource_logs_resource_node_id_foreign');
         });
 
-        Schema::table('permission_role', function(Blueprint $table) {
-            $table->dropForeign('permission_role_permission_id_foreign');
-            $table->dropForeign('permission_role_role_id_foreign');
-        });
-
-        Schema::drop('assigned_roles');
-        Schema::drop('permission_role');
-        Schema::drop('roles');
-        Schema::drop('permissions');
+        Schema::drop('flows');
+        Schema::drop('nodes');
+        Schema::drop('node_role');
+        Schema::drop('node_user');
+        Schema::drop('resource_flow');
+        Schema::drop('resource_node');
+        Schema::drop('resource_logs');
     }
 
 }
