@@ -53,13 +53,33 @@ class WorkFlowNode extends Ardent
     return $this->belongsToMany(Config::get('auth.model'), Config::get('workflow::node_user_table'));
   }
 
+    public function UsersString($count=3){
+        $userString = "";
+        foreach($this->users->take($count) as $user){
+            if(strlen($user->username)>0) {
+                $userString = $userString . $user->username . ",";
+            }
+        }
+        return strlen($userString)>0?$userString.'...':'';
+    }
+
   /**
    * Many-to-Many relations with Roles
    */
   public function roles()
   {
-    return $this->belongsToMany(Config::get('workflow.role'), Config::get('workflow::node_role_table'));
+    return $this->belongsToMany(Config::get('workflow::role'), Config::get('workflow::node_role_table'));
   }
+
+    public function RolesString($count=3){
+        $roleString = "";
+        foreach($this->roles->take($count) as $role){
+            if(strlen($role->name)>0) {
+                $roleString = $roleString . $role->name . ",";
+            }
+        }
+        return strlen($roleString)>0?$roleString.'...':'';
+    }
 
   /**
    * Before delete all constrained foreign relations
