@@ -15,4 +15,8 @@ It will generate the `<timestamp>_workflow_setup_tables.php` migration. You may 
 
 After the migration, workflow tables will be present.
 
-### Create Controller
+### Create Routes
+
+Generate the Workflow routes
+
+    $ php artisan workflow:routes
