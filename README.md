@@ -3,7 +3,7 @@ workflow
 
 this is a workflow package for laravel
 
-### Table create
+### Create Table
 
 Now generate the Workflow migration
 
@@ -14,3 +14,5 @@ It will generate the `<timestamp>_workflow_setup_tables.php` migration. You may 
     $ php artisan migrate
 
 After the migration, workflow tables will be present.
+
+### Create Controller
