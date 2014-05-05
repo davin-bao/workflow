@@ -1,6 +1,10 @@
 <?php
 
 return array(
+  /**
+   * This is a switch about whether record resource log
+   */
+  'record_log'=> true,
 
   /*
   |--------------------------------------------------------------------------

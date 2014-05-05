@@ -21,6 +21,13 @@ class WorkFlowFlow extends Ardent
   protected $table;
 
   /**
+   * Laravel application
+   *
+   * @var Illuminate\Foundation\Application
+   */
+  public static $app;
+
+  /**
    * Ardent validation rules
    *
    * @var array
@@ -34,7 +41,11 @@ class WorkFlowFlow extends Ardent
   public function __construct(array $attributes = array())
   {
     parent::__construct($attributes);
-    $this->table = Config::get('workflow::flows_table');
+
+    if ( ! static::$app )
+      static::$app = app();
+
+    $this->table = static::$app['config']->get('workflow::flows_table');
   }
 
   /**
@@ -42,7 +53,15 @@ class WorkFlowFlow extends Ardent
    */
   public function nodes()
   {
-    return $this->hasMany(Config::get('workflow::node'));
+    return $this->hasMany(static::$app['config']->get('workflow::node'));
+  }
+
+  /**
+   * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+   */
+  public function flowable()
+  {
+    return $this->morphTo();
   }
 
   /**
@@ -54,7 +73,7 @@ class WorkFlowFlow extends Ardent
   public function beforeDelete( $forced = false )
   {
     try {
-      \DB::table(Config::get('workflow::nodes_table'))->where('flow_id', $this->id)->delete();
+      \DB::table(static::$app['config']->get('workflow::nodes_table'))->where('flow_id', $this->id)->delete();
     } catch(Execption $e) {}
 
     return true;

@@ -57,8 +57,8 @@ class WorkflowSetupTables extends Migration {
             $table->increments('id')->unsigned();
             $table->integer('resource_id')->unsigned();
             $table->integer('flow_id')->unsigned();
-            $table->integer('status')->unsigned();      //status has 3 state
-            $table->integer('node_orders')->unsigned();
+            $table->enum('status', array('discard', 'proceed', 'completed', 'archived'))->default('proceed');
+            $table->integer('node_orders')->unsigned()->default(1);
             $table->foreign('flow_id')->references('id')->on('flows');
         });
 
@@ -68,9 +68,9 @@ class WorkflowSetupTables extends Migration {
             $table->increments('id')->unsigned();
             $table->integer('resource_flow_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->integer('orders')->unsigned();
+            $table->integer('orders')->unsigned()->default(-1);
             $table->text('comment');
-            $table->boolean('result');
+            $table->enum('result', array('agreed', 'disagreed', 'unaudited'))->default('unaudited');
             $table->foreign('resource_flow_id')->references('id')->on('resource_flow');
             $table->foreign('user_id')->references('id')->on('users');
         });
