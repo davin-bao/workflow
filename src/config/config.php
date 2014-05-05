@@ -27,6 +27,11 @@ return array(
   */
   'roles_table' => 'roles',
 
+
+  'flow_type_array' => array(
+      'news', 'recruit'
+  ),
+
   /*
   |--------------------------------------------------------------------------
   | Workflow Flow Model
