@@ -53,7 +53,7 @@ class WorkFlowFlow extends Ardent
    */
   public function nodes()
   {
-    return $this->hasMany(static::$app['config']->get('workflow::node'));
+    return $this->hasMany(static::$app['config']->get('workflow::node'))->orderBy('orders');
   }
 
   /**
@@ -62,6 +62,17 @@ class WorkFlowFlow extends Ardent
   public function flowable()
   {
     return $this->morphTo();
+  }
+
+  public function updateNodesOrder($nodeIds){
+      $order = 1;
+      foreach($nodeIds as $nodeId) {
+          $node = $this->nodes()->find($nodeId);
+          if($node) {
+              $node->orders = $order++;
+              $this->nodes()->save($node);
+          }
+      }
   }
 
   /**

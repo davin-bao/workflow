@@ -1,8 +1,4 @@
 
-{{-- styles --}}
-@section('styles')
-@stop
-
 <br/>
 <div id="message" class="alert alert-success alert-block alert-dismissable hidden">
   <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -29,20 +25,12 @@
                     <br/>
                     <!-- info_name -->
                     <div class="form-group">
-                        <label class="span2 control-label" for="flow_name">{{{ Lang::get('workflow::workflow.flow_name') }}}</label>
-                        <div class="span6">
-                          <div class="input-group input-group-sm">
-                            <input type="text" class="form-control" name="flow_name" style="margin: 0px;" id="flow_name" value="{{{ Input::old('flow_name', isset($flow) ? $flow->flow_name : null) }}}">
-                            <span class="input-group-btn">
-                              <button data-url="@if(isset($flow)){{ URL::to('admin/flows/' . $flow->id . '/edit') }}@else{{{ URL::to('admin/flows/create') }}}?_token={{{ csrf_token() }}}@endif"
-                                      class="btn btn-primary btn-flat" name="flow_save" type="button"><i class="fa fa-save"></i> {{{ Lang::get('workflow::button.save') }}}</button>
-                            </span>
-                          </div>
-                            {{ $errors->first('flow_name', '<label class="control-label" for="flow_name"><i class="fa fa-times-circle-o"></i> :message</label>') }}
-                        </div>
+                        <label class="span2 control-label" for="flow_name">{{{ Lang::get('workflow::workflow.flow') }}} {{{ Lang::get('workflow::workflow.name') }}}</label>
+                        <input type="text" class="form-control" name="flow_name" style="margin: 0px;" id="flow_name" value="{{{ Input::old('flow_name', isset($flow) ? $flow->flow_name : null) }}}">
+                        {{ $errors->first('flow_name', '<label class="control-label" for="flow_name"><i class="fa fa-times-circle-o"></i> :message</label>') }}
                     </div>
                     <!-- ./ info_name -->
-                  <div class="form-group">
+                  <div class="form-group @if(!$flow) hidden @endif">
                     <label class="span2 control-label" for="node">{{{ Lang::get('workflow::workflow.node') }}}</label>
                     &nbsp;<a href="#" id="node-add"><i class="fa fa-plus"></i></a>
                     <div class="span6">
@@ -63,6 +51,8 @@
             <!-- Form Actions -->
             <div class="form-group">
                 <div class="span6 offset2">
+                    <button data-url="@if(isset($flow)){{ URL::to('admin/flows/' . $flow->id . '/edit') }}@else{{{ URL::to('admin/flows/create') }}}?_token={{{ csrf_token() }}}@endif"
+                                                   class="btn btn-primary" name="flow_save" type="button"><i class="fa fa-save"></i> {{{ Lang::get('workflow::button.save') }}}</button>
                     <a type="reset" class="btn btn-default" href="{{{ URL::to('admin/flows') }}}">{{{ Lang::get('workflow::button.return') }}}</a>
                 </div>
             </div>
@@ -124,7 +114,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary btn-flat" name="flow_save" type="button"><i class="fa fa-save"></i> {{{ Lang::get('workflow::button.save') }}}</button>
+                <button class="btn btn-primary btn-flat" name="node_save" type="button"><i class="fa fa-save"></i> {{{ Lang::get('workflow::button.save') }}}</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div><!-- /.modal-content -->
@@ -137,24 +127,34 @@
 <script type="text/javascript">
 $(function () {
 
+@if ($flow)
+    @foreach ($flow->nodes as $node)
+        $('.todo-list').append(getNodeList('{{  $node->id }}','{{  $node->node_name }}','{{  $node->UsersString() }}','{{  $node->RolesString() }}'));
+        addModifyNodeEvent({{  $node->id }});
+    @endforeach
+@endif
 
-@foreach ($flow->nodes as $node)
-    $('.todo-list').append(getNodeList('{{  $node->id }}','{{  $node->node_name }}','{{  $node->UsersString() }}','{{  $node->RolesString() }}'));
-    addModifyNodeEvent({{  $node->id }});
-@endforeach
-
-$('.todo-list').sortable();
+$('.todo-list').sortable({
+    change: function( event, ui ) {
+        $('button[name="flow_save"]').removeClass('disabled').html('<i class="fa fa-save"></i> {{{ Lang::get("workflow::button.save") }}}');
+    }
+});
 
 $('input[name="flow_name"]').focusout(function(){
     $('button[name="flow_save"]').removeClass('disabled').html('<i class="fa fa-save"></i> {{{ Lang::get("workflow::button.save") }}}');
 });
 
 $('button[name="flow_save"]').click(function(){
+    var node_ids = [];
+    $('.todo-list li').each(function(){
+        node_ids.push($(this).find('div').attr('data-id'));
+    });
+    console.log(node_ids);
     var flow_name = $('input[name="flow_name"]').val();
     var saveUrl = $(this).attr('data-url');
     $.ajax({
         url: saveUrl,
-        data: { flow_name: flow_name },
+        data: { flow_name: flow_name, node_ids: node_ids },
         type: 'POST',
         dataType : "json"
     }).done(function( data ) {
@@ -164,6 +164,7 @@ $('button[name="flow_save"]').click(function(){
                 .html('<i class="fa fa-check"></i>'+data.message);
             $('button[name="flow_save"]').attr('data-url', "{{ URL::to('admin/flows') }}/"+ data.id  + "/edit");
             $('input[name="flow_id"]').val(data.id);
+            $('.tab-content label[for="node"]').parent().removeClass('hidden').fadeIn();
             showSuccessMsg(data.message);
         }else{
             showErrorMsg(data.message);
@@ -338,9 +339,9 @@ function hideModalTools(){
 }
 
 function showModalTools(id){
-    $("#newModal .modal-footer").html('<button class="btn btn-primary btn-flat" name="flow_save" type="button"><i class="fa fa-save"></i> {{{ Lang::get("workflow::button.save") }}}</button>\
+    $("#newModal .modal-footer").html('<button class="btn btn-primary btn-flat" name="node_save" type="button"><i class="fa fa-save"></i> {{{ Lang::get("workflow::button.save") }}}</button>\
       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>');
-    $("#newModal .modal-footer button[name='flow_save']").click(function(){
+    $("#newModal .modal-footer button[name='node_save']").click(function(){
         hideModalTools();
         saveNode(id);
     });
