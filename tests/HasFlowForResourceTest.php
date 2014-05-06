@@ -42,8 +42,8 @@ class HasFlowForResourceTest extends \Orchestra\Testbench\TestCase {
       ->with( 'auth.table' )
       ->andReturn( 'users' );
 
-    $app['config']->shouldReceive( 'workflow::resource_flow_table' )
-      ->andReturn( 'resource_flow' );
+    $app['config']->shouldReceive( 'workflow::resourceflow_table' )
+      ->andReturn( 'resourceflow' );
     return $app;
   }
 

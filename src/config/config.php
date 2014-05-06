@@ -4,7 +4,7 @@ return array(
   /**
    * This is a switch about whether record resource log
    */
-  'record_log'=> true,
+  'record_log' => true,
 
   /*
   |--------------------------------------------------------------------------
@@ -28,8 +28,8 @@ return array(
   'roles_table' => 'roles',
 
 
-  'flow_type_array' => array(
-      'news', 'recruit'
+  'resource_type' => array(
+    '"infos"', '"recruits"'
   ),
 
   /*
@@ -43,46 +43,46 @@ return array(
   */
   'flow' => '\Flow',
 
-	/*
-	|--------------------------------------------------------------------------
-	| Workflow Flows Table
-	|--------------------------------------------------------------------------
-	|
-	| This is the Flows table used by Workflow to save roles to the database.
-	|
-	*/
-	'flows_table' => 'flows',
+  /*
+  |--------------------------------------------------------------------------
+  | Workflow Flows Table
+  |--------------------------------------------------------------------------
+  |
+  | This is the Flows table used by Workflow to save roles to the database.
+  |
+  */
+  'flows_table' => 'flows',
 
-	/*
-	|--------------------------------------------------------------------------
-	| Workflow Node Model
-	|--------------------------------------------------------------------------
-	|
-	| This is the Node model used by Workflow to create correct relations.  Update
-	| the node if it is in a different namespace.
-	|
-	*/
-	'node' => '\Node',
+  /*
+  |--------------------------------------------------------------------------
+  | Workflow Node Model
+  |--------------------------------------------------------------------------
+  |
+  | This is the Node model used by Workflow to create correct relations.  Update
+  | the node if it is in a different namespace.
+  |
+  */
+  'node' => '\Node',
 
-	/*
-	|--------------------------------------------------------------------------
-	| Workflow Nodes Table
-	|--------------------------------------------------------------------------
-	|
-	| This is the Nodes table used by Workflow to save Nodes to the database.
-	|
-	*/
-	'nodes_table' => 'nodes',
+  /*
+  |--------------------------------------------------------------------------
+  | Workflow Nodes Table
+  |--------------------------------------------------------------------------
+  |
+  | This is the Nodes table used by Workflow to save Nodes to the database.
+  |
+  */
+  'nodes_table' => 'nodes',
 
-	/*
-	|--------------------------------------------------------------------------
-	| Workflow node_role Table
-	|--------------------------------------------------------------------------
-	|
-	| This is the node_role table used by Workflow to save relationship between nodes and roles to the database.
-	|
-	*/
-	'node_role_table' => 'node_role',
+  /*
+  |--------------------------------------------------------------------------
+  | Workflow node_role Table
+  |--------------------------------------------------------------------------
+  |
+  | This is the node_role table used by Workflow to save relationship between nodes and roles to the database.
+  |
+  */
+  'node_role_table' => 'node_role',
 
   /*
   |--------------------------------------------------------------------------
@@ -102,27 +102,29 @@ return array(
   | This is the resource_flow table used by Workflow to save relationship between resources and flows to the database.
   |
   */
-  'resource_flow_table' => 'resource_flow',
+  'resourceflow_table' => 'resourceflow',
+  'resourceflow' => '\Resourceflow',
 
   /*
   |--------------------------------------------------------------------------
-  | Workflow resource_node Table
+  | Workflow resourcenode Table
   |--------------------------------------------------------------------------
   |
-  | This is the resource_node table used by Workflow to save relationship between resources and nodes to the database.
+  | This is the resourcenode table used by Workflow to save relationship between resources and nodes to the database.
   |
   */
-  'resource_node_table' => 'resource_node',
+  'resourcenode_table' => 'resourcenode',
+  'resourcenode' => '\Resourcenode',
 
   /*
   |--------------------------------------------------------------------------
-  | Workflow resource_logs Table
+  | Workflow resourcelog Table
   |--------------------------------------------------------------------------
   |
-  | This is the resource_logs table used by Workflow to save resource's log to the database.
+  | This is the resourcelog table used by Workflow to save resource's log to the database.
   |
   */
-  'resource_logs_table' => 'resource_logs',
+  'resourcelog_table' => 'resourcelog',
+  'resourcelog' => '\Resourcelog',
 
-  'flow_form' =>             'workflow::flow_form',
 );

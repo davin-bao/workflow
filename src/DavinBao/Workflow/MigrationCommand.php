@@ -42,9 +42,9 @@ class MigrationCommand extends Command {
     {
 
         $this->line('');
-        $this->info( "Tables: flows, nodes, node_role, node_user, resource_flow, resource_node, resource_logs" );
-        $message = "An migration that creates 'flows', 'nodes', 'node_role', 'node_user', 'resource_flow', 'resource_node', 'resource_logs'".
-            " tables will be created in app/database/migrations directory";
+        $this->info( "Tables: flows, nodes, node_role, node_user, resourceflow, resourcenode, resourcelog" );
+        $message = "An migration that creates 'flows', 'nodes', 'node_role', 'node_user', 'resourceflow', 'resourcenode', 'resourcelog'".
+            " tables will be created in app/database/migrations directory ";
 
         $this->comment( $message );
         $this->line('');
@@ -69,7 +69,6 @@ class MigrationCommand extends Command {
 
         }
     }
-
     /**
      * Create the migration
      *
@@ -80,7 +79,12 @@ class MigrationCommand extends Command {
     {
       $migration_file = $this->laravel->path."/database/migrations/".date('Y_m_d_His')."_workflow_setup_tables.php";
       $app = app();
-      $output = $app['view']->make('workflow::generators.migration')->render();
+      $resource_type = '';
+      if(is_array($app['config']->get('resource_type'))){
+        $resource_type = implode(",", app()['config']->get('workflow::resource_type'));
+      }
+
+      $output = $app['view']->make('workflow::generators.migration')->with('res_type',$resource_type)->render();
 
       if( ! file_exists( $migration_file ) )
       {

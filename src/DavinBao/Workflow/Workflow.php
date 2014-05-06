@@ -60,7 +60,17 @@ class Workflow
   public function makeFlowForm($flow = null, $roles = null)
   {
     //var_dump($this->_app['config']);exit;
-    return $this->_app['view']->make( $this->_app['config']->get('workflow::flow_form'), compact( 'flow', 'roles') );
+    return $this->_app['view']->make( 'workflow::flow_form', compact( 'flow', 'roles') );
+  }
+
+  public function makeBindingFlowForm($flows = array(), $entry = null)
+  {
+    return $this->_app['view']->make( 'workflow::binding_form', compact( 'flows', 'entry') );
+  }
+
+  public function makeAuditFlowForm($entry = null, $auditUsers = array(), $nextNode = null)
+  {
+    return $this->_app['view']->make( 'workflow::audit_form', compact( 'entry', 'auditUsers', 'nextNode') );
   }
 
 }

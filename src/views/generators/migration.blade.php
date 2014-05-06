@@ -17,6 +17,7 @@ class WorkflowSetupTables extends Migration {
         {
             $table->increments('id')->unsigned();
             $table->string('flow_name')->unique();
+            $table->enum('resource_type', array({{ $res_type }}));
             $table->timestamps();
         });
 
@@ -52,37 +53,40 @@ class WorkflowSetupTables extends Migration {
         });
 
         // Creates the resource_flows (Many-to-Many relation) table
-        Schema::create('resource_flow', function($table)
+        Schema::create('resourceflow', function($table)
         {
             $table->increments('id')->unsigned();
             $table->integer('resource_id')->unsigned();
             $table->integer('flow_id')->unsigned();
-            $table->enum('status', array('discard', 'proceed', 'completed', 'archived'))->default('proceed');
+            $table->enum('status', array('unstart','discard', 'proceed', 'completed', 'archived'))->default('unstart');
             $table->integer('node_orders')->unsigned()->default(1);
+            $table->timestamps();
             $table->foreign('flow_id')->references('id')->on('flows');
         });
 
         // Creates the resource_node (Many-to-Many relation) table
-        Schema::create('resource_node', function($table)
+        Schema::create('resourcenode', function($table)
         {
             $table->increments('id')->unsigned();
-            $table->integer('resource_flow_id')->unsigned();
+            $table->integer('resourceflow_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->integer('orders')->unsigned()->default(-1);
+            $table->integer('orders')->unsigned();
             $table->text('comment');
             $table->enum('result', array('agreed', 'disagreed', 'unaudited'))->default('unaudited');
-            $table->foreign('resource_flow_id')->references('id')->on('resource_flow');
+            $table->timestamps();
+            $table->foreign('resourceflow_id')->references('id')->on('resourceflow');
             $table->foreign('user_id')->references('id')->on('users');
         });
 
-        // Creates the resource_logs (One-to-Many relation) table
-        Schema::create('resource_logs', function($table)
+        // Creates the resourcelog (One-to-Many relation) table
+        Schema::create('resourcelog', function($table)
         {
             $table->increments('id')->unsigned();
-            $table->integer('resource_node_id')->unsigned();
+            $table->integer('resourcenode_id')->unsigned();
             $table->string('title');
             $table->text('content');
-            $table->foreign('resource_node_id')->references('id')->on('resource_node');
+            $table->timestamps();
+            $table->foreign('resourcenode_id')->references('id')->on('resourcenode');
         });
     }
 
@@ -104,24 +108,24 @@ class WorkflowSetupTables extends Migration {
             $table->dropForeign('node_user_node_id_foreign');
             $table->dropForeign('node_user_user_id_foreign');
         });
-        Schema::table('resource_flow', function(Blueprint $table) {
-          $table->dropForeign('resource_flow_flow_id_foreign');
+        Schema::table('resourceflow', function(Blueprint $table) {
+          $table->dropForeign('resourceflow_flow_id_foreign');
         });
-        Schema::table('resource_node', function(Blueprint $table) {
-          $table->dropForeign('resource_node_resource_flow_id_foreign');
-          $table->dropForeign('resource_node_user_id_foreign');
+        Schema::table('resourcenode', function(Blueprint $table) {
+          $table->dropForeign('resourcenode_resourceflow_id_foreign');
+          $table->dropForeign('resourcenode_user_id_foreign');
         });
-        Schema::table('resource_logs', function(Blueprint $table) {
-          $table->dropForeign('resource_logs_resource_node_id_foreign');
+        Schema::table('resourcelog', function(Blueprint $table) {
+          $table->dropForeign('resourcelog_resourcenode_id_foreign');
         });
 
         Schema::drop('flows');
         Schema::drop('nodes');
         Schema::drop('node_role');
         Schema::drop('node_user');
-        Schema::drop('resource_flow');
-        Schema::drop('resource_node');
-        Schema::drop('resource_logs');
+        Schema::drop('resourceflow');
+        Schema::drop('resourcenode');
+        Schema::drop('resourcelog');
     }
 
 }

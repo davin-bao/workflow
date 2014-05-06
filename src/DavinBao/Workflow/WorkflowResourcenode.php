@@ -36,11 +36,11 @@ class WorkFlowResourcenode extends Ardent
   public function __construct(array $attributes = array())
   {
     parent::__construct($attributes);
-    $this->table = Config::get('workflow::resource_node_table');
+    $this->table = Config::get('workflow::resourcenode_table');
   }
 
   public function flow(){
-    $this->belongsTo("WorkFlowResourceflow");
+    $this->belongsTo(static::$app['config']->get('workflow::resourceflow'));
   }
 
   public function user(){
@@ -48,7 +48,7 @@ class WorkFlowResourcenode extends Ardent
   }
 
   public function resourceLog(){
-    return $this->hasOne('WorkFlowResourcelog');
+    return $this->hasOne(static::$app['config']->get('workflow::resourcelog'));
   }
 
   public function recordLog($title, $content){
@@ -77,7 +77,7 @@ class WorkFlowResourcenode extends Ardent
   public function beforeDelete( $forced = false )
   {
     try {
-      \DB::table(Config::get('workflow::resource_logs_table'))->where('resource_node_id', $this->id)->delete();
+      \DB::table(Config::get('workflow::resourcelogs_table'))->where('resourcenode_id', $this->id)->delete();
     } catch(Execption $e) {}
 
     return true;

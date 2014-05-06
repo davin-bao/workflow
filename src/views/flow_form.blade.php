@@ -23,13 +23,33 @@
                   <input type="hidden" name="flow_id" value="@if (isset($flow)){{ $flow->id }}@endif" />
                     <!-- ./ csrf token -->
                     <br/>
-                    <!-- info_name -->
-                    <div class="form-group">
-                        <label class="span2 control-label" for="flow_name">{{{ Lang::get('workflow::workflow.flow') }}} {{{ Lang::get('workflow::workflow.name') }}}</label>
-                        <input type="text" class="form-control" name="flow_name" style="margin: 0px;" id="flow_name" value="{{{ Input::old('flow_name', isset($flow) ? $flow->flow_name : null) }}}">
-                        {{ $errors->first('flow_name', '<label class="control-label" for="flow_name"><i class="fa fa-times-circle-o"></i> :message</label>') }}
+                  <!-- flow_name -->
+                  <div class="form-group">
+                    <label class="span2 control-label" for="flow_name">{{{ Lang::get('workflow::workflow.flow') }}} {{{ Lang::get('workflow::workflow.name') }}}</label>
+                    <input type="text" class="form-control" name="flow_name" style="margin: 0px;" id="flow_name" value="{{{ Input::old('flow_name', isset($flow) ? $flow->flow_name : null) }}}">
+                    {{ $errors->first('flow_name', '<label class="control-label" for="flow_name"><i class="fa fa-times-circle-o"></i> :message</label>') }}
+                  </div>
+                  <!-- ./ flow_name -->
+                  <!-- resource_type -->
+                  <div class="form-group {{{ $errors->has('resource_type') || $errors->has('resource_type') ? 'has-error' : '' }}}">
+                    <label class="span2 control-label" for="resource_type">{{{ Lang::get('workflow::workflow.resource_type') }}}</label>
+                    <div class="span6">
+                      <select class="form-control" name="resource_type" id="resource_type">
+                      @if (!$flow)
+                        @foreach (Config::get('workflow::resource_type') as $type)
+                        <option value="{{{ str_replace('"','',$type) }}}"{{{ (Input::old('resource_type') === str_replace('"','',$type) ? ' selected="selected"' : '') }}}>{{{ Lang::get('admin/menu.'.str_replace('"','',$type)) }}}</option>
+                        @endforeach
+                      @else
+                        @foreach (Config::get('workflow::resource_type') as $type)
+                        <option value="{{{ str_replace('"','',$type) }}}"{{{ ($flow->resource_type === str_replace('"','',$type) ? ' selected="selected"' : '') }}}>{{{ Lang::get('admin/menu.'.str_replace('"','',$type)) }}}</option>
+                        @endforeach
+                      @endif
+                      </select>
+                      {{ $errors->first('resource_type', '<label class="control-label" for="resource_type"><i class="fa fa-times-circle-o"></i> :message</label>') }}
                     </div>
-                    <!-- ./ info_name -->
+                  </div>
+                  <!-- ./ resource_type -->
+
                   <div class="form-group @if(!$flow) hidden @endif">
                     <label class="span2 control-label" for="node">{{{ Lang::get('workflow::workflow.node') }}}</label>
                     &nbsp;<a href="#" id="node-add"><i class="fa fa-plus"></i></a>
@@ -151,10 +171,11 @@ $('button[name="flow_save"]').click(function(){
     });
     console.log(node_ids);
     var flow_name = $('input[name="flow_name"]').val();
+    var resource_type = $('select[name="resource_type"]').val();
     var saveUrl = $(this).attr('data-url');
     $.ajax({
         url: saveUrl,
-        data: { flow_name: flow_name, node_ids: node_ids },
+        data: { flow_name: flow_name,resource_type: resource_type, node_ids: node_ids },
         type: 'POST',
         dataType : "json"
     }).done(function( data ) {

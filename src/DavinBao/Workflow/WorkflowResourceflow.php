@@ -32,9 +32,7 @@ class WorkFlowResourceflow extends Ardent
    *
    * @var array
    */
-  public static $rules = array(
-    'node_order' => 'required|numeric'
-  );
+  public static $rules = array();
 
   /**
    * Creates a new instance of the model
@@ -46,82 +44,90 @@ class WorkFlowResourceflow extends Ardent
     if ( ! static::$app )
       static::$app = app();
 
-    $this->table = static::$app['config']->get('workflow::resource_flow_table');
+    $this->table = static::$app['config']->get('workflow::resourceflow_table');
   }
 
-  public function bindRelationsData($resourceModel){
-    self::$relationsData = array(
-      'resource'    => array(self::HAS_ONE, $resourceModel, 'foreignKey' => 'resource_id'),
-      'flow'    => array(self::BELONGS_TO, static::$app['config']->get('workflow::flow')),
-      'resource_nodes'    => array(self::HAS_MANY, "WorkFlowResourcenode"),
-    );
+//  public function bindRelationsData($resourceModel){
+//    self::$relationsData = array(
+//      'resource'    => array(self::BELONGS_TO, $resourceModel),
+//      'flow'    => array(self::BELONGS_TO, ),
+//      '$resourceNode'    => array(self::HAS_MANY, "WorkFlowResourcenode"),
+//    );
+//  }
+
+  public function flow() {
+    return $this->belongsTo(static::$app['config']->get('workflow::flow'));
+  }
+
+  public function resourcenodes() {
+    return $this->hasMany(static::$app['config']->get('workflow::resourcenode'), 'resourceflow_id');
   }
 
 
 
   /**
-   * Attach resource_nodes to current role
-   * @param $resource_nodes
+   * Attach $resourceNode to current role
+   * @param $resourceNode
    */
-  public function attachNode( $resource_nodes )
+  public function attachNode( $resourceNode )
   {
-    if( is_object($resource_nodes))
-      $resource_nodes = $resource_nodes->getKey();
+    if( is_object($resourceNode))
+      $resourceNode = $resourceNode->getKey();
 
-    if( is_array($resource_nodes))
-      $resource_nodes = $resource_nodes['id'];
+    if( is_array($resourceNode))
+      $resourceNode = $resourceNode['id'];
 
-    $this->resource_nodess()->attach( $resource_nodes );
+    $this->resourcenodes()->attach( $resourceNode );
   }
 
   /**
-   * Detach permission form current resource_nodes
-   * @param $resource_nodes
+   * Detach permission form current $resourceNode
+   * @param $resourceNode
    */
-  public function detachNode( $resource_nodes )
+  public function detachNode( $resourceNode )
   {
-    if( is_object($resource_nodes))
-      $resource_nodes = $resource_nodes->getKey();
+    if( is_object($resourceNode))
+      $resourceNode = $resourceNode->getKey();
 
-    if( is_array($resource_nodes))
-      $resource_nodes = $resource_nodes['id'];
+    if( is_array($resourceNode))
+      $resourceNode = $resourceNode['id'];
 
-    $this->resource_nodess()->detach( $resource_nodes );
+    $this->resourcenodes()->detach( $resourceNode );
   }
 
   /**
    * Attach multiple resource_nodess to current node
    *
-   * @param $resource_nodess
+   * @param $resourceNodes
    * @access public
    * @return void
    */
-  public function attachNodes($resource_nodess)
+  public function attachNodes($resourceNodes)
   {
-    foreach ($resource_nodess as $resource_nodes)
+    foreach ($resourceNodes as $resourceNode)
     {
-      $this->attachNode($resource_nodes);
+      $this->attachNode($resourceNode);
     }
   }
 
   /**
    * Detach multiple resource_nodess from current node
    *
-   * @param $resource_nodess
+   * @param $resourceNodes
    * @access public
    * @return void
    */
-  public function detachNodes($resource_nodess)
+  public function detachNodes($resourceNodes)
   {
-    foreach ($resource_nodess as $resource_nodes)
+    foreach ($resourceNodes as $resourceNode)
     {
-      $this->detachNode($resource_nodes);
+      $this->detachNode($resourceNode);
     }
   }
 
   public function getAuditUsers(){
     $auditUsers = array();
-    $unauditedNodes = $this->whereHas('resource_nodes', function($q)
+    $unauditedNodes = $this->whereHas('resourcenodes', function($q)
     {
       $q->where('result', '=', 'unaudited');
     })->get();
@@ -130,12 +136,9 @@ class WorkFlowResourceflow extends Ardent
       return $auditUsers;
     }
     //if this node is finished, get users in the next node
-    $nextOrder = (int)$this->node_order + 1;
-    $nextNode = $this->flow()->whereHas('nodes',function($q) use ($nextOrder){
-      $q->where('orders','=', $nextOrder);
-    })->get()->first();
-    //if this is last node , return null array
-    if($nextNode && $nextNode->count() <= 0){
+    $nextNode = $this->getNextNode();
+
+    if(!$nextNode || $nextNode->count() <= 0){
       return $auditUsers;
     }
 
@@ -150,6 +153,20 @@ class WorkFlowResourceflow extends Ardent
     return $auditUsers;
   }
 
+  public function getNextNode(){
+    $nextOrder = (int)$this->node_order + 1;
+
+    $nextNode = \DB::table(static::$app['config']->get('workflow::nodes_table').' AS nodes')
+      ->join(static::$app['config']->get('workflow::flows_table').' AS flows', 'flows.id', '=', 'nodes.flow_id')
+      ->join(static::$app['config']->get('workflow::resourceflow_table').' AS resourceflows', 'flows.id', '=', 'resourceflows.flow_id')
+      ->where('nodes.orders', '=', $nextOrder)
+      ->first();
+
+    $node_relition = static::$app['config']->get('workflow::node');
+    $node_instance = new $node_relition;
+    return $node_instance::find($nextNode->id);
+  }
+
   public function setAuditUsers($auditUsers = array()){
     foreach($auditUsers as $user){
       $node = new WorkFlowResourcenode();
@@ -162,7 +179,7 @@ class WorkFlowResourceflow extends Ardent
   public function comment($result, $comment, $title = null, $content = null){
     $userId = Auth::user()->id;
     //get current node, save audit infomation
-    $currentNode = $this->whereHas('resource_nodes',function($q) use ($userId){
+    $currentNode = $this->whereHas('resourcenodes',function($q) use ($userId){
       $q->where('user_id','=', $userId)
         ->where('result','=','unaudited');
     })->get()->first();
@@ -185,7 +202,7 @@ class WorkFlowResourceflow extends Ardent
   public function goFirst(){
     //get first user id, if haven't , point to me
     $user = Auth::user();
-    $resNode = $this->resource_nodes->where('orders', '=', 0)->get()->first();
+    $resNode = $this->resourcenodes->where('orders', '=', 0)->get()->first();
     if(!$resNode && $resNode->count <=0){
       $user = $resNode->user;
     }
@@ -250,7 +267,7 @@ class WorkFlowResourceflow extends Ardent
   public function beforeDelete( $forced = false )
   {
     try {
-      \DB::table(static::$app['config']->get('workflow::resource_node_table'))->where('resource_flow_id', $this->id)->delete();
+      \DB::table(static::$app['config']->get('workflow::resourcenode_table'))->where('resourceflow_id', $this->id)->delete();
     } catch(Execption $e) {}
 
     return true;

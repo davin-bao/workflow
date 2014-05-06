@@ -21,49 +21,49 @@ trait HasNodeForUser
         return $this->belongsToMany(Config::get('workflow::node'), Config::get('workflow::node_user_table'));
     }
 
-    public function resource_nodes()
+    public function resourcenodes()
     {
-      return $this->hasMany("WorkFlowResourcenode");
+      return $this->hasMany(Config::get('workflow::resourcenode'));
     }
 
   public function myUnAuditedResources(){
-    $resource_nodes = $this::whereHas('resource_nodes', function($q)
+    $resourceNodes = $this::whereHas('resourcenodes', function($q)
     {
       $q->where('result', '=', 'unaudited');
     })->get();
 
     $resources = array();
 
-    foreach ($resource_nodes as $resource_node) {
-      $resources[] = $resource_node->flow()->resource();
+    foreach ($resourceNodes as $resourceNode) {
+      $resources[] = $resourceNode->flow()->resource();
     }
     return $resources;
   }
 
   public function myAgreedResources(){
-    $resource_nodes = $this::whereHas('resource_nodes', function($q)
+    $resourceNodes = $this::whereHas('resourcenodes', function($q)
     {
       $q->where('result', '=', 'agreed');
     })->get();
 
     $resources = array();
 
-    foreach ($resource_nodes as $resource_node) {
-      $resources[] = $resource_node->flow()->resource();
+    foreach ($resourceNodes as $resourceNode) {
+      $resources[] = $resourceNode->flow()->resource();
     }
     return $resources;
   }
 
   public function myDisagreedResources(){
-    $resource_nodes = $this::whereHas('resource_nodes', function($q)
+    $resourceNodes = $this::whereHas('resourcenodes', function($q)
     {
       $q->where('result', '=', 'disagreed');
     })->get();
 
     $resources = array();
 
-    foreach ($resource_nodes as $resource_node) {
-      $resources[] = $resource_node->flow()->resource();
+    foreach ($resourceNodes as $resourceNode) {
+      $resources[] = $resourceNode->flow()->resource();
     }
     return $resources;
   }
