@@ -24,6 +24,10 @@ trait HasFlowForResource
     return WorkFlowFlow::where('resource_type','=',$resource_type)->get();
   }
 
+  public function isBindingFlow() {
+    return $this->resourceflow() != false;
+  }
+
   public function bindingFlow($flow_id){
     $resFlows = WorkFlowResourceflow::where('flow_id','=',$flow_id)->where('resource_id','=',$this->id)->get();
     if($resFlows->count()<=0){
@@ -36,11 +40,14 @@ trait HasFlowForResource
 
   public function startFlow($auditUsers, $title, $content){
     $this->resourceflow()->goFirst();
-    return $this->agree('',$auditUsers, 0, $title, $content);
+    return $this->agree('',$auditUsers, $title, $content);
   }
 
   public function status(){
-    return $this->resourceflow()->status;
+    if($this->resourceflow()) {
+      return $this->resourceflow()->status;
+    }
+    return false;
   }
 
   public function flow(){
@@ -51,8 +58,8 @@ trait HasFlowForResource
    * Get all audit users has role in current node of this flow
    * @return array $user
    */
-  public function getAuditUsers(){
-    return $this->resourceflow()->getAuditUsers();
+  public function getNextAuditUsers(){
+    return $this->resourceflow()->getNextAuditUsers();
   }
 
     public function getNextNode(){
@@ -60,19 +67,29 @@ trait HasFlowForResource
     }
 
     public function getCurrentNode(){
+      if($this->resourceflow()) {
         return $this->resourceflow()->getCurrentNode();
+      }
+      return null;
     }
 
     public function isMeAudit(){
-        return $this->getCurrentNode() != false;
+      $myNode = $this->resourceflow()->getMyUnAuditResourceNode();
+      return $myNode != false;
     }
 
-  public function agree($comment, $auditUsers = array(), $title = null, $content = null){
-    if($this->status() != 'proceed') return false;
-
-    if($this->resourceflow()->comment('agreed',$comment, $title, $content)->save()) {
+  public function agree($comment, $auditUsers, $title = null, $content = null){
+    if($this->resourceflow()->comment('agreed',$comment, $title, $content)) {
       //go next node
-      $this->resourceflow()->goNext($auditUsers);
+      //if have not next resource node ,to go next node
+      $unauditedNode = $this->resourceflow()->getAnotherUnAuditResourceNode();
+      if(!$unauditedNode || $unauditedNode->count()<=0){
+        $this->resourceflow()->goNext();
+      }
+
+      if($auditUsers && $auditUsers->count()>0) {
+        $this->resourceflow()->setNextAuditUsers($auditUsers);
+      }
       return true;
     }
 
@@ -82,7 +99,7 @@ trait HasFlowForResource
   public function disagree($callback, $comment, $title = null, $content = null){
     if($this->status() != 'proceed') return false;
 
-    if($this->resourceflow()->comment('agreed',$comment, $title, $content)->save()) {
+    if($this->resourceflow()->comment('disagreed',$comment, $title, $content)) {
       //run callback
       if ($callback) {
         return call_user_func($callback);
@@ -92,6 +109,20 @@ trait HasFlowForResource
     return false;
   }
 
+  public function shouldPublish(){
+    if($this->resourceflow()->getAnotherUnAuditResourceNode() == false && $this->resourceflow()->getNextNode() == null){
+      return true;
+    }
+    return false;
+  }
+
+  public function discard(){
+    return $this->resourceflow()->discard();
+  }
+
+  public function goFirst(){
+    return $this->resourceflow()->goFirst();
+  }
 
   /**
    * Before delete all constrained foreign relations

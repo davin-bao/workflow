@@ -16,6 +16,13 @@ return array(
     'saved' => '已保存',
     'general_info' => '基本信息',
     'does_not_exist' => '该信息不存在',
+    'action' => '操作',
+    'failed_unknown' => '失败',
+
+    'proceed' => '审核过程中',
+    'unstart' => '未审核',
+    'completed' => '已发布',
+    'discard' => '已废弃',
 
 
     'select_this_role' => '选中这里，将会对该角色下的所有成员开放该节点的审批权限!',

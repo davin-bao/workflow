@@ -34,13 +34,12 @@ class WorkFlowResourcelog extends Ardent
   public function __construct(array $attributes = array())
   {
     parent::__construct($attributes);
-    $this->table = Config::get('workflow::resourcelogs_table');
+    $this->table = Config::get('workflow::resourcelog_table');
   }
 
   public function resourcenode(){
     return $this->hasOne('WorkFlowResourcenode');
   }
-
 
 
 }

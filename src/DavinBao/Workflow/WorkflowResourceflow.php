@@ -7,7 +7,9 @@
  */
 namespace DavinBao\Workflow;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use LaravelBook\Ardent\Ardent;
 use Config;
 
@@ -63,148 +65,105 @@ class WorkFlowResourceflow extends Ardent
     return $this->hasMany(static::$app['config']->get('workflow::resourcenode'), 'resourceflow_id');
   }
 
+   public  function getCurrentNode(){
+       return $this->flow()->first()->nodes()->where('orders','=', $this->node_orders)->first();
+   }
 
-
-  /**
-   * Attach $resourceNode to current role
-   * @param $resourceNode
-   */
-  public function attachNode( $resourceNode )
-  {
-    if( is_object($resourceNode))
-      $resourceNode = $resourceNode->getKey();
-
-    if( is_array($resourceNode))
-      $resourceNode = $resourceNode['id'];
-
-    $this->resourcenodes()->attach( $resourceNode );
+    public function getAnotherUnAuditResourceNode(){
+      $userId = static::$app['auth']->user()->id;
+      return $this->resourcenodes()->where('user_id','<>', $userId)
+        ->where('result','=','unaudited')->first();
+        //Or
+//        return $this->whereHas('resourcenodes', function($q) use ($user)
+//        {
+//          $q->where('result', '=', 'unaudited')
+//            ->where('user_id', '<>', $user->id);
+//        })->get();
+    }
+  public function getUnAuditResourceNodes(){
+    return $this->resourcenodes()->where('result','=','unaudited')->get();
   }
 
-  /**
-   * Detach permission form current $resourceNode
-   * @param $resourceNode
-   */
-  public function detachNode( $resourceNode )
-  {
-    if( is_object($resourceNode))
-      $resourceNode = $resourceNode->getKey();
-
-    if( is_array($resourceNode))
-      $resourceNode = $resourceNode['id'];
-
-    $this->resourcenodes()->detach( $resourceNode );
-  }
-
-  /**
-   * Attach multiple resource_nodess to current node
-   *
-   * @param $resourceNodes
-   * @access public
-   * @return void
-   */
-  public function attachNodes($resourceNodes)
-  {
-    foreach ($resourceNodes as $resourceNode)
-    {
-      $this->attachNode($resourceNode);
-    }
-  }
-
-  /**
-   * Detach multiple resource_nodess from current node
-   *
-   * @param $resourceNodes
-   * @access public
-   * @return void
-   */
-  public function detachNodes($resourceNodes)
-  {
-    foreach ($resourceNodes as $resourceNode)
-    {
-      $this->detachNode($resourceNode);
-    }
-  }
-
-  public function getAuditUsers(){
-    $auditUsers = array();
-    $unauditedNodes = $this->whereHas('resourcenodes', function($q)
-    {
-      $q->where('result', '=', 'unaudited');
-    })->get();
-    // if this node is not finished(need another persion audit), return null array
-    if($unauditedNodes->count()>0){
-      return $auditUsers;
-    }
-    //if this node is finished, get users in the next node
-    $nextNode = $this->getNextNode();
-
-    if(!$nextNode || $nextNode->count() <= 0){
-      return $auditUsers;
-    }
-
-    $auditUsers = $nextNode->users;
-    foreach($nextNode->roles as $role){
-      foreach($role->users as $user){
-        if(!in_array($user, $auditUsers)){
-          array_push($auditUsers, $user);
-        }
+  public function deleteAllUnAuditResourceNodes(){
+    $unAuditNodes = $this->getUnAuditResourceNodes();
+    if($unAuditNodes){
+      foreach($unAuditNodes as $node){
+        $node->delete();
       }
     }
-    return $auditUsers;
+    return true;
+  }
+
+  public function getMyUnAuditResourceNode(){
+    $userId = static::$app['auth']->user()->id;
+    return $this->resourcenodes()->where('user_id','=', $userId)
+      ->where('result','=','unaudited')->first();
   }
 
   public function getNextNode(){
-    $nextOrder = (int)$this->node_order + 1;
+    $nextOrder = (int)$this->node_orders + 1;
 
     $nextNode = \DB::table(static::$app['config']->get('workflow::nodes_table').' AS nodes')
       ->join(static::$app['config']->get('workflow::flows_table').' AS flows', 'flows.id', '=', 'nodes.flow_id')
       ->join(static::$app['config']->get('workflow::resourceflow_table').' AS resourceflows', 'flows.id', '=', 'resourceflows.flow_id')
       ->where('nodes.orders', '=', $nextOrder)
-      ->first();
+      ->where('resourceflows.id', '=', $this->id)
+      ->select('nodes.id')->first();
     if(!$nextNode){
-        return null;
+      return null;
     }
     $node_relition = static::$app['config']->get('workflow::node');
     $node_instance = new $node_relition;
     return $node_instance::find($nextNode->id);
   }
 
-   public  function getCurrentNode(){
-       return $this->flow()->first()->nodes()->where('orders','=', $this->node_orders)->get();
-//           $this->whereHas('resourcenodes',function($q) use ($userId){
-//           $q->where('user_id','=', $userId)
-//               ->where('result','=','unaudited');
-//       })->toSql();
-   }
+  public function getNextAuditUsers(){
+    $nextAuditUsers = new Collection();
 
-    public function getCurrentResourceNode(){
-        $userId = static::$app['auth']->user()->id;
-        return $this->resourcenodes()->where('user_id','=', $userId)
-               ->where('result','=','unaudited')->first();
+    $unauditedNode = $this->getAnotherUnAuditResourceNode();
+    // if this node is not finished(need another persion audit), return null array
+    if($unauditedNode && $unauditedNode->count()>0){
+      return $nextAuditUsers;
     }
+    //if this node is finished, get users in the next node
+    $nextNode = $this->getNextNode();
 
+    if(!$nextNode || $nextNode->count() <= 0){
+      return $nextAuditUsers;
+    }
+    $nextAuditUsers = $nextNode->users()->get();
 
-  public function setAuditUsers($auditUsers = array()){
-    foreach($auditUsers as $user){
+    foreach($nextNode->roles()->get() as $role){
+      foreach($role->users()->get() as $user){
+        if(!$nextAuditUsers->contains($user->id)){
+            $nextAuditUsers->add($user);
+        }
+      }
+    }
+    return $nextAuditUsers;
+  }
+
+  public function setNextAuditUsers($nextAuditUsers = array()){
+    foreach($nextAuditUsers as $user){
       $node = new WorkFlowResourcenode();
-      $node->user = $user;
-      $node->save();
-      $this->attachNode($node);
+      $node->user_id = $user->id;
+      $node->orders = $this->node_orders;
+      $this->resourcenodes()->save($node);
     }
+    Log::error($node->errors()->all());
   }
 
   public function comment($result, $comment, $title = null, $content = null){
     //get current node, save audit infomation
-    $currentNode = $this->getCurrentResourceNode();
-
-    if(!$currentNode || $currentNode->count()<=0){
+    $currentResourceNode = $this->getMyUnAuditResourceNode();
+    if(!$currentResourceNode || $currentResourceNode->count()<=0){
       return false;
     }
-    $currentNode->result = $result;
-    $currentNode->comment = $comment;
-    $currentNode->orders = $this->node_order;
-    $currentNode->recordLog($title, $content);
-    if($currentNode->save()){
+    $currentResourceNode->result = $result;
+    $currentResourceNode->comment = $comment;
+    $currentResourceNode->orders = $this->node_orders;
+    $currentResourceNode->recordLog($title, $content);
+    if($currentResourceNode->save()){
       return true;
     }
     return false;
@@ -214,52 +173,52 @@ class WorkFlowResourceflow extends Ardent
    * return this flow to first
    */
   public function goFirst(){
+    //delete others unAndit nodes
+    $this->deleteAllUnAuditResourceNodes();
     //get first user id, if haven't , point to me
-    $user = Auth::user();
-    $resNode = $this->resourcenodes->where('orders', '=', 0)->get()->first();
-    if(!$resNode && $resNode->count <=0){
-      $user = $resNode->user;
+    $userId = static::$app['auth']->user()->id;
+    $resNode = $this->resourcenodes()->where('orders', '=', 0)->get()->first();
+    if($resNode && $resNode->count() >0){
+      $userId = $resNode->user_id;
     }
     $firstNode = new WorkFlowResourcenode();
-    $firstNode->user = $user;
+    $firstNode->user_id = $userId;
     $firstNode->orders = 0;
-    $firstNode->save();
-    $this->attachNode($firstNode);
+    $this->resourcenodes()->save($firstNode);
 
-    $this->node_order = 0;
-    $this->status = 'proceed';
-
-    $auditUsers = array();
-    $auditUsers[] = $user;
-    $this->setAuditUsers($auditUsers);
-
+    $this->node_orders = 0;
+    $this->status = 'unstart';
+    return $this->save();
   }
 
   /**
    * go to next node
    * @param $nextAuditUsers
    */
-  public function goNext($nextAuditUsers){
-    $currentOrder = $this->node_order;
+  public function goNext(){
+    $currentOrder = $this->node_orders;
     $nextNodeOrder = $currentOrder + 1;
 
     $status = 'proceed';
-    $maxOrder = $this->flow()->nodes()->count();
+    $maxOrder = $this->flow()->first()->nodes()->count();
     if($nextNodeOrder > $maxOrder){
       $status = 'completed';
     }
-
-    $this->node_order = $nextNodeOrder;
+    $this->node_orders = $nextNodeOrder;
     $this->status = $status;
-    $this->setAuditUsers($nextAuditUsers);
+    $this->save();
+    Log::error($this->errors()->all());
   }
 
   /**
    * set this flow discard
    */
   public function discard(){
+    //delete others unAndit nodes
+    $this->deleteAllUnAuditResourceNodes();
+    //var_dump($this->getUnAuditResourceNodes());exit;
     $this->status = 'discard';
-    $this->save();
+    return $this->save();
   }
 
   /**
@@ -267,7 +226,7 @@ class WorkFlowResourceflow extends Ardent
    */
   public function archived(){
     $this->status = 'archived';
-    $this->save();
+    return $this->save();
   }
 
 

@@ -37,29 +37,27 @@
           <div class="tab-pane active" id="tab-agree">
             <br/>
             <!-- audit_user -->
-            <div class="form-group audit_user {{{ $errors->has('audit_user') || $errors->has('audit_user') ? 'has-error' : '' }}}">
-              <label class="span2 control-label" for="audit_user">@if($nextNode) {{{ $nextNode->node_name }}}@endif {{{ Lang::get('workflow::workflow.audit_user') }}}</label>
+            <div class="form-group audit_user @if(count($nextAuditUsers)<=0) hidden @endif">
+              <label class="span2 control-label" for="audit_user">{{{ Lang::get('workflow::workflow.audit_user') }}}</label>
 
               <div class="span6">
 
                 <ul class="list-inline">
-                  @foreach ($auditUsers as $user)
+                  @foreach ($nextAuditUsers as $user)
                   <li>
                     <div class="checkbox user" data-id="{{{ $user->id }}}">
-                      <label><input type="checkbox" style="margin: 0px;" name="audit_user" value="{{{ $user->id }}}"> {{{ $user->username }}}</label>
+                      <label><input type="checkbox" style="margin: 0px;" name="audit_users[]" value="{{{ $user->id }}}"> {{{ $user->username }}}</label>
                     </div>
                   </li>
                   @endforeach
                 </ul>
-                {{ $errors->first('audit_user', '<label class="control-label" for="audit_user"><i
-                    class="fa fa-times-circle-o"></i> :message</label>') }}
               </div>
             </div>
             <!-- ./ audit_user -->
 
             <div class="form-group agree-buttons">
               <div class="span6 offset2">
-                <button type="submit" class="btn btn-success" name="submit" value="agree">{{{ Lang::get('button.submit') }}}</button>
+                <button type="submit" class="btn btn-success" name="submit" value="agree">@if($entry->shouldPublish()){{{ Lang::get('workflow::workflow.publish') }}}@else{{{ Lang::get('button.submit') }}}@endif</button>
               </div>
             </div>
           </div>
@@ -70,7 +68,6 @@
               <div class="span6 offset2">
                 <button type="submit" class="btn btn-success" name="submit" value="discard">{{{ Lang::get('workflow::workflow.discard') }}}</button>
                 <button type="submit" class="btn btn-success" name="submit" value="gofirst">{{{ Lang::get('workflow::workflow.gofirst') }}}</button>
-                <button type="submit" class="btn btn-success" name="submit" value="goback">{{{ Lang::get('workflow::workflow.goback') }}}</button>
               </div>
             </div>
           </div>
@@ -107,24 +104,6 @@
       default:
         break;
     }
-//    $("div.result .radio input[type=radio][name=result]").change(function(){
-//      alert($(this).val());
-//    });
-//
-//
-//    $("div.result .radio .agree").click(function(){
-//      $('div.audit_user').show();
-//      $('div.agree-buttons').show();
-//      $('div.disagree-buttons').hide();
-//    });
-//
-//    $("div.result .radio .disagree").click(function(){
-//      $('div.audit_user').hide();
-//      $('div.agree-buttons').hide();
-//      $('div.disagree-buttons').show();
-//    });
-
-
 
   });
 </script>

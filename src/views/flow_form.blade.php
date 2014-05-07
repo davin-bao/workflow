@@ -108,12 +108,12 @@
                         <label class="span2 control-label" for="node_name">{{{ Lang::get("workflow::workflow.follower") }}}</label>
                         <ul class="nav nav-tabs">
                             @foreach ($roles as $role)
-                            <li class="active"><a href="#{{{ $role->name }}}" data-toggle="tab">{{{ $role->name }}}</a></li>
+                            <li><a href="#{{{ $role->name }}}" data-toggle="tab">{{{ $role->name }}}</a></li>
                             @endforeach
                         </ul>
                         <div class="tab-content">
                             @foreach ($roles as $role)
-                            <div class="tab-pane active" id="{{{ $role->name }}}">
+                            <div class="tab-pane" id="{{{ $role->name }}}">
                                 <div class="checkbox role" data-id="{{{ $role->id }}}" id="{{{ $role->name }}}">
                                     <label>
                                         <input type="checkbox" style="margin: 0px;" value="">{{{ Lang::get("workflow::workflow.select_this_role") }}}</label>
@@ -194,6 +194,7 @@ $('button[name="flow_save"]').click(function(){
 });
 
 $('#node-add').click(function(){
+    $('.todo-list .loading').remove();
     $('.todo-list').append(getNodeLoadingList());
     var flowId = $('input[name="flow_id"]').val();
 
@@ -208,6 +209,10 @@ $('#node-add').click(function(){
         }
     });
 });
+$('#newModal').on('hidden.bs.modal', function (e) {
+  $('.todo-list li .row').show();
+  $('.todo-list .loading').hide();
+})
 
 function addModifyNodeEvent(id){
     $(".todo-list .row[data-id='"+id+"'] .tools .fa-edit").click(function(){
@@ -238,7 +243,6 @@ function addModifyNodeEvent(id){
         });
 
     });
-
 }
 
 function getNode(id, callback){
@@ -295,7 +299,7 @@ function saveNode(id){
             $('#newModal').modal('hide');
             getNode(id, function(data) {
                 if(data.result){
-                    $('.todo-list li .row[data-id="'+data.id+'"]').parent('li').after(getNodeList(data.id, data.node_name, data.userstr, data.rolestr));
+                    $('.todo-list .loading').parent('li').after(getNodeList(data.id, data.node_name, data.userstr, data.rolestr));
                     $('.todo-list .loading').parent('li').remove();
                     addModifyNodeEvent(data.id);
                 }else{
@@ -310,7 +314,7 @@ function saveNode(id){
 }
 
 function getNodeLoadingList(){
-    return '<li class="loading"><i class="ion ion-loading-c"></i></li>';
+    return '<div class="loading"><i class="ion ion-loading-c"></i></div>';
 }
 
 function getNodeList(id, name, users, roles){
@@ -344,6 +348,9 @@ function showEditNodeForm(data){
     for(var i=0;i<data.users.length;i++){
         $('#newModal .list-inline .user[data-id="'+data.users[i].id+'"] .icheckbox_minimal').addClass('checked').attr('aria-checked','true');
     }
+
+  $('#newModal .nav-tabs li').removeClass('active').first().addClass('active');
+  $('#newModal .tab-content .tab-pane').removeClass('active').first().addClass('active');
 }
 
 function showModal(){
@@ -366,11 +373,12 @@ function showModalTools(id){
         hideModalTools();
         saveNode(id);
     });
-    $("#newModal .modal-footer button[data-dismiss='modal']").click(function(){
-        $('.todo-list li .row').show();
-        $('.todo-list .loading').remove();
-    });
+//    $("#newModal .modal-footer button[data-dismiss='modal']").click(function(){
+//        $('.todo-list li .row').show();
+//        $('.todo-list .loading').remove();
+//    });
 }
+
 
 function showSuccessMsg(msg){
     $('#message').removeClass('hidden')

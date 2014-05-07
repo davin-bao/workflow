@@ -22,6 +22,12 @@ class WorkFlowResourcenode extends Ardent
   protected $table;
 
   /**
+   * Laravel application
+   *
+   * @var Illuminate\Foundation\Application
+   */
+  public static $app;
+  /**
    * Ardent validation rules
    *
    * @var array
@@ -36,7 +42,11 @@ class WorkFlowResourcenode extends Ardent
   public function __construct(array $attributes = array())
   {
     parent::__construct($attributes);
-    $this->table = Config::get('workflow::resourcenode_table');
+
+    if ( ! static::$app )
+      static::$app = app();
+
+    $this->table = static::$app['config']->get('workflow::resourcenode_table');
   }
 
   public function flow(){
@@ -52,15 +62,11 @@ class WorkFlowResourcenode extends Ardent
   }
 
   public function recordLog($title, $content){
-    if(Config::get('workflow::recordlog')){
+    if(Config::get('workflow::record_log')){
       $resourceLog = new WorkFlowResourcelog();
       $resourceLog->title = $title;
       $resourceLog->content = $content;
-      if(!$resourceLog->save()){
-        return false;
-      }
-      $this->resourceLog = $resourceLog;
-      if($this->save()){
+      if($this->resourceLog()->save($resourceLog)){
         return true;
       }
     }
@@ -77,7 +83,7 @@ class WorkFlowResourcenode extends Ardent
   public function beforeDelete( $forced = false )
   {
     try {
-      \DB::table(Config::get('workflow::resourcelogs_table'))->where('resourcenode_id', $this->id)->delete();
+      \DB::table(Config::get('workflow::resourcelog_table'))->where('resourcenode_id', $this->id)->delete();
     } catch(Execption $e) {}
 
     return true;

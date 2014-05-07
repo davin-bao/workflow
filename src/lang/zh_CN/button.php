@@ -3,6 +3,7 @@
 return array(
 
     'view' => '查看',
+    'audit' =>'审核',
     'read_more' => '查看详情',
     'load_more' => '更多...',
   'create'   => '创建',

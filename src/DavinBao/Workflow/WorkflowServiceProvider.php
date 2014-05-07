@@ -66,12 +66,18 @@ class WorkflowServiceProvider extends ServiceProvider {
 
       $this->app['command.workflow.routes'] = $this->app->share(function($app)
       {
-          return new RoutesCommand($app);
+        return new RoutesCommand($app);
+      });
+
+      $this->app['command.workflow.models'] = $this->app->share(function($app)
+      {
+        return new ModelsCommand($app);
       });
 
       $this->commands(
         'command.workflow.migration',
-        'command.workflow.routes'
+        'command.workflow.routes',
+        'command.workflow.models'
       );
     }
 
