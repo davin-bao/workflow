@@ -59,7 +59,7 @@ class WorkflowSetupTables extends Migration {
             $table->integer('resource_id')->unsigned();
             $table->integer('flow_id')->unsigned();
             $table->enum('status', array('unstart','discard', 'proceed', 'completed', 'archived'))->default('unstart');
-            $table->integer('node_orders')->unsigned()->default(1);
+            $table->integer('node_orders')->unsigned()->default(0);
             $table->timestamps();
             $table->foreign('flow_id')->references('id')->on('flows');
         });

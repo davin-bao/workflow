@@ -33,7 +33,7 @@ class WorkFlowFlow extends Ardent
    * @var array
    */
   public static $rules = array(
-    'flow_name' => 'required|between:4,128'
+    'flow_name' => 'required|between:1,20'
   );
   /**
    * Creates a new instance of the model

@@ -43,6 +43,10 @@ trait HasFlowForResource
     return $this->resourceflow()->status;
   }
 
+  public function flow(){
+      return $this->resourceflow()->flow()->first();
+  }
+
   /**
    * Get all audit users has role in current node of this flow
    * @return array $user
@@ -51,9 +55,17 @@ trait HasFlowForResource
     return $this->resourceflow()->getAuditUsers();
   }
 
-  public function getNextNode(){
-    return $this->resourceflow()->getNextNode();
-  }
+    public function getNextNode(){
+        return $this->resourceflow()->getNextNode();
+    }
+
+    public function getCurrentNode(){
+        return $this->resourceflow()->getCurrentNode();
+    }
+
+    public function isMeAudit(){
+        return $this->getCurrentNode() != false;
+    }
 
   public function agree($comment, $auditUsers = array(), $title = null, $content = null){
     if($this->status() != 'proceed') return false;

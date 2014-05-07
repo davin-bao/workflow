@@ -3,6 +3,7 @@
 return array(
     'flow' => '流程',
     'node' => '节点',
+    'audit' =>'审核',
 
     'name' => '名称',
     'follower' => '参与者',
@@ -20,7 +21,7 @@ return array(
     'select_this_role' => '选中这里，将会对该角色下的所有成员开放该节点的审批权限!',
     'resource_type' => '可绑定资源类型',
     'comment'=>'审核评语',
-    'audit_user' => '选择审核人',
+    'audit_user' => '审核人',
     'audit_result' => '审核结果',
     'agree' => '通过',
     'disagree' => '不通过',

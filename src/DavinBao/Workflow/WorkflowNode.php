@@ -26,7 +26,7 @@ class WorkFlowNode extends Ardent
    * @var array
    */
   public static $rules = array(
-    'node_name' => 'required|between:4,128'
+    'node_name' => 'required|between:1,20'
   );
 
   /**

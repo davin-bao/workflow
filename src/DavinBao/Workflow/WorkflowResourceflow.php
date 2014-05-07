@@ -161,11 +161,28 @@ class WorkFlowResourceflow extends Ardent
       ->join(static::$app['config']->get('workflow::resourceflow_table').' AS resourceflows', 'flows.id', '=', 'resourceflows.flow_id')
       ->where('nodes.orders', '=', $nextOrder)
       ->first();
-
+    if(!$nextNode){
+        return null;
+    }
     $node_relition = static::$app['config']->get('workflow::node');
     $node_instance = new $node_relition;
     return $node_instance::find($nextNode->id);
   }
+
+   public  function getCurrentNode(){
+       return $this->flow()->first()->nodes()->where('orders','=', $this->node_orders)->get();
+//           $this->whereHas('resourcenodes',function($q) use ($userId){
+//           $q->where('user_id','=', $userId)
+//               ->where('result','=','unaudited');
+//       })->toSql();
+   }
+
+    public function getCurrentResourceNode(){
+        $userId = static::$app['auth']->user()->id;
+        return $this->resourcenodes()->where('user_id','=', $userId)
+               ->where('result','=','unaudited')->first();
+    }
+
 
   public function setAuditUsers($auditUsers = array()){
     foreach($auditUsers as $user){
@@ -177,12 +194,9 @@ class WorkFlowResourceflow extends Ardent
   }
 
   public function comment($result, $comment, $title = null, $content = null){
-    $userId = Auth::user()->id;
     //get current node, save audit infomation
-    $currentNode = $this->whereHas('resourcenodes',function($q) use ($userId){
-      $q->where('user_id','=', $userId)
-        ->where('result','=','unaudited');
-    })->get()->first();
+    $currentNode = $this->getCurrentResourceNode();
+
     if(!$currentNode || $currentNode->count()<=0){
       return false;
     }

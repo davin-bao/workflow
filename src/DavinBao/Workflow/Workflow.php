@@ -68,9 +68,9 @@ class Workflow
     return $this->_app['view']->make( 'workflow::binding_form', compact( 'flows', 'entry') );
   }
 
-  public function makeAuditFlowForm($entry = null, $auditUsers = array(), $nextNode = null)
+  public function makeAuditFlowForm($entry = null, $auditUsers = array(), $currentNode = null, $nextNode = null)
   {
-    return $this->_app['view']->make( 'workflow::audit_form', compact( 'entry', 'auditUsers', 'nextNode') );
+    return $this->_app['view']->make( 'workflow::audit_form', compact( 'entry', 'auditUsers','currentNode', 'nextNode') );
   }
 
 }

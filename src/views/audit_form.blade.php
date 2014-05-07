@@ -23,7 +23,7 @@
 
       <!-- result -->
       <div class="form-group result">
-        <label class="span2 control-label" for="result" style="width: 100%;">{{{ Lang::get("workflow::workflow.audit_result") }}}</label>
+        <label class="span2 control-label" for="result" style="width: 100%;">@if($currentNode) {{{ $currentNode->node_name }}}@endif{{{ Lang::get("workflow::workflow.audit_result") }}}</label>
 
         <!-- Tabs -->
         <ul class="nav nav-tabs">
