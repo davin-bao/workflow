@@ -54,7 +54,7 @@ class WorkFlowResourcenode extends Ardent
   }
 
   public function user(){
-    $this->belongsTo(Config::get('auth.model'));
+    return $this->belongsTo(static::$app['config']->get('auth.model'));
   }
 
   public function resourceLog(){

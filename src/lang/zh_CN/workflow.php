@@ -19,6 +19,10 @@ return array(
     'action' => '操作',
     'failed_unknown' => '失败',
 
+
+    'start' => '开始',
+    'stop' => '结束',
+
     'proceed' => '审核过程中',
     'unstart' => '未审核',
     'completed' => '已发布',
@@ -30,10 +34,15 @@ return array(
     'comment'=>'审核评语',
     'audit_user' => '审核人',
     'audit_result' => '审核结果',
-    'agree' => '通过',
-    'disagree' => '不通过',
+    'push' => '发文',
+    'agreed' => '通过',
+    'disagreed' => '不通过',
+    'unaudited' => '待审核',
     'gofirst' => '发稿人重新核对后再审核',
     'goback' => '上一个审核人重新审核',
     'discard' => '废弃',
     'publish' => '发布',
+
+    'audit_info' => '审核信息',
+    'show_log' => '查看日志',
 );

@@ -27,8 +27,8 @@
 
         <!-- Tabs -->
         <ul class="nav nav-tabs">
-          <li class="active"><a href="#tab-agree" data-toggle="tab">{{{ Lang::get("workflow::workflow.agree") }}}</a></li>
-          <li><a href="#tab-disagree" data-toggle="tab">{{{ Lang::get("workflow::workflow.disagree") }}}</a></li>
+          <li class="active"><a href="#tab-agree" data-toggle="tab">{{{ Lang::get("workflow::workflow.agreed") }}}</a></li>
+          <li><a href="#tab-disagree" data-toggle="tab">{{{ Lang::get("workflow::workflow.disagreed") }}}</a></li>
         </ul>
         <!-- ./ tabs -->
 

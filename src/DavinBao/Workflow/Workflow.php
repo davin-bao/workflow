@@ -63,6 +63,11 @@ class Workflow
     return $this->_app['view']->make( 'workflow::flow_form', compact( 'flow', 'roles') );
   }
 
+  public function makeFlowGraph($flow = null, $orderID = 0)
+  {
+    return $this->_app['view']->make( 'workflow::flow_graph', compact( 'flow', 'orderID') );
+  }
+
   public function makeBindingFlowForm($flows = array(), $entry = null)
   {
     return $this->_app['view']->make( 'workflow::binding_form', compact( 'flows', 'entry') );
@@ -73,4 +78,8 @@ class Workflow
     return $this->_app['view']->make( 'workflow::audit_form', compact( 'entry', 'nextAuditUsers','currentNode') );
   }
 
+  public function makeAuditDetail($entry)
+  {
+    return $this->_app['view']->make( 'workflow::audit_detail', compact('entry') );
+  }
 }

@@ -51,7 +51,17 @@ trait HasFlowForResource
   }
 
   public function flow(){
+    if($this->resourceflow()) {
       return $this->resourceflow()->flow()->first();
+    }
+    return false;
+  }
+
+  public function orderID(){
+    if($this->resourceflow()) {
+      return $this->resourceflow()->node_orders;
+    }
+    return false;
   }
 
   /**
@@ -137,6 +147,27 @@ trait HasFlowForResource
     } catch(Execption $e) {}
 
     return true;
+  }
+
+
+  public function getAuditByTimeLine(){
+    $auditsByDate = array();
+    $flow = $this->flow();
+    $nodes = $this->resourceflow()->resourcenodes()->get();
+    foreach ($nodes as $node) {
+      $username = $node->user()->first()->username;
+      $nodename = \Lang::get('workflow::workflow.push');
+      if((int)$node->orders>0){
+        $nodename = $flow->nodes()->where('orders','=',$node->orders)->first()->node_name;
+      }
+
+      $auditsByDate[$node->updated_at->toDateString()][$node->updated_at->format('H:i')]['id'] = $node->id;
+      $auditsByDate[$node->updated_at->toDateString()][$node->updated_at->format('H:i')]['username'] = $username;
+      $auditsByDate[$node->updated_at->toDateString()][$node->updated_at->format('H:i')]['nodename'] = $nodename;
+      $auditsByDate[$node->updated_at->toDateString()][$node->updated_at->format('H:i')]['result'] = $node->result;
+      $auditsByDate[$node->updated_at->toDateString()][$node->updated_at->format('H:i')]['comment'] = $node->comment;
+    }
+    return $auditsByDate;
   }
 
 }

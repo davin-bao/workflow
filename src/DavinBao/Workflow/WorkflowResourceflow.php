@@ -102,7 +102,6 @@ class WorkFlowResourceflow extends Ardent
 
   public function getNextNode(){
     $nextOrder = (int)$this->node_orders + 1;
-
     $nextNode = \DB::table(static::$app['config']->get('workflow::nodes_table').' AS nodes')
       ->join(static::$app['config']->get('workflow::flows_table').' AS flows', 'flows.id', '=', 'nodes.flow_id')
       ->join(static::$app['config']->get('workflow::resourceflow_table').' AS resourceflows', 'flows.id', '=', 'resourceflows.flow_id')
