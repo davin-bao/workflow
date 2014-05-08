@@ -45,4 +45,6 @@ return array(
 
     'audit_info' => '审核信息',
     'show_log' => '查看日志',
+
+    'delete_flow_info' => '是否确定删除该审核流程信息？',
 );
