@@ -179,6 +179,10 @@ trait HasFlowForResource
     $nodes = $resFlow->resourcenodes()->get();
     foreach ($nodes as $node) {
       $username = $node->user()->first()->username;
+      if(isset($node->user()->first()->last_name) && isset($node->user()->first()->first_name)) {
+        $username = $node->user()->first()->last_name.' '.$node->user()->first()->first_name;
+      }
+
       $nodename = \Lang::get('workflow::workflow.push');
       if((int)$node->orders>0){
         $nodename = $flow->nodes()->where('orders','=',$node->orders)->first()->node_name;

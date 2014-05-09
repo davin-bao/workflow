@@ -122,7 +122,7 @@ Set the propertly values to the `config/auth.php` and `davin-bao/workflow/src/co
      @if(isset($entry->isBinding))
     {{ Workflow::makeAuditDetail($entry) }}
     @endif
-    
+
 ### Need I audit, show audit button
 ```php
     if(isset($entry->isBinding) && $entry->isMeAudit()) { /// show audit button }

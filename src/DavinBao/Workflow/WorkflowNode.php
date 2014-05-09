@@ -56,8 +56,12 @@ class WorkFlowNode extends Ardent
     public function UsersString($count=3){
         $userString = "";
         foreach($this->users->take($count) as $user){
-            if(strlen($user->username)>0) {
-                $userString = $userString . $user->username . ",";
+          $username = $user->username;
+          if(isset($user->last_name) && isset($user->first_name)) {
+            $username = $user->last_name.' '.$user->first_name;
+          }
+            if(strlen($username)>0) {
+                $userString = $userString . $username . ",";
             }
         }
         return strlen($userString)>0?$userString.'...':'';
