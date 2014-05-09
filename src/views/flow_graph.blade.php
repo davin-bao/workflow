@@ -13,6 +13,7 @@
 
 <div class="flow-graph">
   <button class="btn btn-circle btn-success">{{{ Lang::get("workflow::workflow.start") }}}</button><i class="fa fa-long-arrow-right"></i>
+  @if ($flow)
   @foreach ($flow->nodes as $node)
   <button class="btn btn-circle @if ($node->orders<$orderID) btn-success @else if($node->orders==$orderID) btn-warning @endif"
           data-toggle="tooltip"
@@ -21,5 +22,6 @@
   </button>
   <i class="fa fa-long-arrow-right"></i>
   @endforeach
-  <button class="btn btn-circle @if (count($flow->nodes)<$orderID) btn-success @endif">{{{ Lang::get("workflow::workflow.stop") }}}</button>
+  @endif
+  <button class="btn btn-circle @if ($flow && count($flow->nodes)<$orderID) btn-success @endif">{{{ Lang::get("workflow::workflow.stop") }}}</button>
 </div>

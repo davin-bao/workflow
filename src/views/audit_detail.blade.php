@@ -2,6 +2,7 @@
 <!-- row -->
 <div class="row">
   <div class="col-md-12">
+    @if($entry->getAuditByTimeLine())
     <!-- The time line -->
     <ul class="timeline">
       @foreach ( $entry->getAuditByTimeLine() as $key => $items )
@@ -50,6 +51,7 @@
         <i class="fa fa-clock-o"></i>
       </li>
     </ul>
+    @endif
   </div>
   <!-- /.col -->
 </div><!-- /.row -->

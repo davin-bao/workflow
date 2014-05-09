@@ -64,20 +64,26 @@ class WorkflowServiceProvider extends ServiceProvider {
             return new MigrationCommand($app);
         });
 
-      $this->app['command.workflow.routes'] = $this->app->share(function($app)
-      {
-        return new RoutesCommand($app);
-      });
+        $this->app['command.workflow.routes'] = $this->app->share(function($app)
+        {
+            return new RoutesCommand($app);
+        });
 
-      $this->app['command.workflow.models'] = $this->app->share(function($app)
-      {
-        return new ModelsCommand($app);
-      });
+        $this->app['command.workflow.models'] = $this->app->share(function($app)
+        {
+            return new ModelsCommand($app);
+        });
+
+        $this->app['command.workflow.controllers'] = $this->app->share(function($app)
+        {
+            return new ControllersCommand($app);
+        });
 
       $this->commands(
         'command.workflow.migration',
         'command.workflow.routes',
-        'command.workflow.models'
+        'command.workflow.models',
+        'command.workflow.controllers'
       );
     }
 
