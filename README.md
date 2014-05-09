@@ -1,9 +1,46 @@
-workflow
+Workflow (Laravel4 Package)
 ========
 
-this is a workflow package for laravel
+Workflow package provides a simple way to add audit flow to **Laravel4**.
 
-## Easy Install
+## Quick start
+
+### Required setup
+
+In the `require` key of `composer.json` file add the following
+
+    "davin-bao/workflow": "dev-master"
+
+Run the Composer update comand
+
+    $ composer update
+
+In your `config/app.php` add `'DavinBao\Workflow\WorkflowServiceProvider'` to the end of the `$providers` array
+
+```php
+'providers' => array(
+
+    'Illuminate\Foundation\Providers\ArtisanServiceProvider',
+    'Illuminate\Auth\AuthServiceProvider',
+    ...
+    'DavinBao\Workflow\WorkflowServiceProvider',
+
+),
+```
+
+At the end of `config/app.php` add `'Workflow'       => 'DavinBao\Workflow\WorkflowFacade'` to the `$aliases` array
+
+```php
+'aliases' => array(
+
+    'App'        => 'Illuminate\Support\Facades\App',
+    'Artisan'    => 'Illuminate\Support\Facades\Artisan',
+    ...
+    'Workflow'       => 'DavinBao\Workflow\WorkflowFacade',
+
+),
+
+### Configuration
 
 ### 1. Create Table
 
@@ -44,16 +81,20 @@ After the migration, workflow tables will be present.
 
 ### 6. Link the Controller
 
-class AdminEntryController extends AdminController {
-  use \DavinBao\Workflow\HasFlowForResourceController;
+		class AdminEntryController extends AdminController {
+				use \DavinBao\Workflow\HasFlowForResourceController;
+		}
 
-  }
 ### 7. Add roles for this controller
 
-  Route::get('entrys/{entry}/binding', 'AdminEntrysController@getBindingFlow');
-  Route::post('entrys/{entry}/binding', 'AdminEntrysController@postBindingFlow');
-  Route::get('entrys/{entry}/audit', 'AdminEntrysController@getAudit');
-  Route::post('entrys/{entry}/audit', 'AdminEntrysController@postAudit');
+		Route::get('entrys/{entry}/binding', 'AdminEntrysController@getBindingFlow');
+		Route::post('entrys/{entry}/binding', 'AdminEntrysController@postBindingFlow');
+		Route::get('entrys/{entry}/audit', 'AdminEntrysController@getAudit');
+		Route::post('entrys/{entry}/audit', 'AdminEntrysController@postAudit');
+
+### 8. Modify config
+
+Set the propertly values to the `config/auth.php` and `davin-bao/workflow/src/config/config.php` .
 
 ## Functions
 

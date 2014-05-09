@@ -1,10 +1,15 @@
 {
     "name": "davin-bao/workflow",
     "description": "this is a workflow package for laravel",
+    "keywords": ["laravel","workflow"],
+    "homepage": "https://github.com/davin-bao/workflow",
+    "license": "MIT",
     "authors": [
         {
             "name": "davin-bao",
-            "email": "davin.bao@gmail.com"
+            "email": "davin.bao@gmail.com",
+            "homepage": "http://davinbao.blog.com/",
+            "role": "Developer"
         }
     ],
     "repositories": [
