@@ -111,16 +111,18 @@ Set the propertly values to the `config/auth.php` and `davin-bao/workflow/src/co
     $entry->status()
 ```
 
-### Show flow Graph
+### Show flow Graph, show this resource audit flow status
 
-If you want show this resource audit flow status, just input:
     @if(isset($entry->isBinding))
     {{ Workflow::makeFlowGraph($entry->flow(), $entry->orderID()) }}
     @endif
+
 ### Show audit flow all details
+
      @if(isset($entry->isBinding))
     {{ Workflow::makeAuditDetail($entry) }}
     @endif
+    
 ### Need I audit, show audit button
 ```php
     if(isset($entry->isBinding) && $entry->isMeAudit()) { /// show audit button }
