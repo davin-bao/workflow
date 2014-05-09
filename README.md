@@ -26,33 +26,21 @@ After the migration, workflow tables will be present.
     $ php artisan workflow:routes
 
 ### 4. Link the Model
+    class Entry extends Eloquent {
+      use \DavinBao\Workflow\HasFlowForResource;
+    }
 
-class Entry extends Eloquent {
-  use \DavinBao\Workflow\HasFlowForResource;
-  }
+### 5. Add two function for audit log,Audit Flow will record this resource's title and content
 
-### 5. Add two function for audit log
-Audit Flow will record this resource's title and content
-
-  /**
-   * Returns the title of the Entry log
-   *
-   * @return string
-   */
-  public function getLogTitle()
-  {
-    return $this->entry_title;
-  }
-
-  /**
-   * Returns the Content of the Entry log
-   *
-   * @return string
-   */
-  public function getLogContent()
-  {
-    return $this->entry_content;
-  }
+		public function getLogTitle()
+		{
+			return $this->entry_title;
+		}
+		
+		public function getLogContent()
+		{
+			return $this->entry_content;
+		}
 
 ### 6. Link the Controller
 
