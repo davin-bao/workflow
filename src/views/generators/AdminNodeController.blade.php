@@ -85,15 +85,16 @@ class AdminNodeController extends AdminController {
     if ( $resourcenode )
     {
       $log = $resourcenode->resourceLog()->first();
-      $username = $resourcenode->user()->first()->username;
-      if(isset($resourcenode->user()->first()->last_name) && isset($resourcenode->user()->first()->first_name)) {
-        $username = $resourcenode->user()->first()->last_name.' '.$resourcenode->user()->first()->first_name;
+      if($log) {
+        $username = $resourcenode->user()->first()->username;
+        if(isset($resourcenode->user()->first()->last_name) && isset($resourcenode->user()->first()->first_name)) {
+          $username = $resourcenode->user()->first()->last_name.' '.$resourcenode->user()->first()->first_name;
+        }
+        $result = $resourcenode->result;
+        return \View::make(\Config::get('app.admin_template').'/Flows/show_log', compact('log','username','result'));
       }
-      $result = $resourcenode->result;
-      return \View::make(\Config::get('app.admin_template').'/Flows/show_log', compact('log','username','result'));
-    }else{
-      return Redirect::to('admin/infos')->with('error', Lang::get('workflow::workflow.does_not_exist'));
     }
+    return Redirect::to('admin/infos')->with('error', Lang::get('workflow::workflow.does_not_exist'));
   }
 
 }
