@@ -39,10 +39,11 @@ At the end of `config/app.php` add `'Workflow'       => 'DavinBao\Workflow\Workf
     'Workflow'       => 'DavinBao\Workflow\WorkflowFacade',
 
 ),
+```
 
 ### Configuration
 
-### 1. Create Table
+### Create Table
 
 Now generate the Workflow migration
 
@@ -54,21 +55,23 @@ It will generate the `<timestamp>_workflow_setup_tables.php` migration. You may 
 
 After the migration, workflow tables will be present.
 
-### 2. Create Controllers
+### Create Controllers
 
     $ php artisan workflow:controllers
 
-### 3. Create Routes
+### Create Routes
 
     $ php artisan workflow:routes
 
-### 4. Link the Model
+### Link the Model
+```php
     class Entry extends Eloquent {
       use \DavinBao\Workflow\HasFlowForResource;
     }
+```
 
-### 5. Add two function for audit log,Audit Flow will record this resource's title and content
-
+### Add two function for audit log,Audit Flow will record this resource's title and content
+```php
 		public function getLogTitle()
 		{
 			return $this->entry_title;
@@ -78,46 +81,47 @@ After the migration, workflow tables will be present.
 		{
 			return $this->entry_content;
 		}
-
-### 6. Link the Controller
-
+```
+### Link the Controller
+```php
 		class AdminEntryController extends AdminController {
 				use \DavinBao\Workflow\HasFlowForResourceController;
 		}
-
-### 7. Add roles for this controller
-
+```
+### Add roles for this controller
+```php
 		Route::get('entrys/{entry}/binding', 'AdminEntrysController@getBindingFlow');
 		Route::post('entrys/{entry}/binding', 'AdminEntrysController@postBindingFlow');
 		Route::get('entrys/{entry}/audit', 'AdminEntrysController@getAudit');
 		Route::post('entrys/{entry}/audit', 'AdminEntrysController@postAudit');
-
-### 8. Modify config
+```
+### Modify config
 
 Set the propertly values to the `config/auth.php` and `davin-bao/workflow/src/config/config.php` .
 
 ## Functions
 
 ### Get is binding audit flow
-
+```php
     if(isset($entry->isBinding)) {///is binding, do something }
-
+```
 
 ### Get resource audit status
-
+```php
     $entry->status()
-
+```
 
 ### Show flow Graph
 
 If you want show this resource audit flow status, just input:
-
+    @if(isset($entry->isBinding))
     {{ Workflow::makeFlowGraph($entry->flow(), $entry->orderID()) }}
-
+    @endif
 ### Show audit flow all details
-
+     @if(isset($entry->isBinding))
     {{ Workflow::makeAuditDetail($entry) }}
-
+    @endif
 ### Need I audit, show audit button
-
+```php
     if(isset($entry->isBinding) && $entry->isMeAudit()) { /// show audit button }
+```
