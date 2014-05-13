@@ -23,7 +23,7 @@ trait HasFlowForResource
     $resourceType = lcfirst(get_class($this)).'s';
     if(!$this->resourceFlow){
 
-      $this->resourceFlow =  WorkFlowResourceflow::where('resource_id','=',$this->id)->where('resource_type', '=',$resourceType)->first();
+      $this->resourceFlow = $this->hasOne('Resourceflow', 'resource_id');  //WorkFlowResourceflow::where('resource_id','=',$this->id)->where('resource_type', '=',$resourceType)->first();
     }
     return $this->resourceFlow;
   }
@@ -48,28 +48,24 @@ trait HasFlowForResource
   }
 
   public function startFlow($auditUsers, $title, $content){
-    $resFlow = $this->resourceflow();
-    if(!$resFlow) return false;
-    $resFlow->goFirst();
+      if(!$this->resourceflow) return false;
+    $this->resourceflow->goFirst();
     return $this->agree('',$auditUsers, $title, $content);
   }
 
   public function status(){
-    $resFlow = $this->resourceflow();
-    if(!$resFlow) return false;
-    return $resFlow->status;
+      if(!$this->resourceflow) return false;
+    return $this->resourceflow->status;
   }
 
   public function flow(){
-    $resFlow = $this->resourceflow();
-    if(!$resFlow) return false;
-    return $resFlow->flow()->first();
+      if(!$this->resourceflow) return false;
+      return $this->resourceflow->flow()->first();
   }
 
   public function orderID(){
-    $resFlow = $this->resourceflow();
-    if(!$resFlow) return false;
-    return $resFlow->node_orders;
+      if(!$this->resourceflow) return false;
+    return $this->resourceflow->node_orders;
   }
 
   /**
@@ -77,43 +73,38 @@ trait HasFlowForResource
    * @return array $user
    */
   public function getNextAuditUsers(){
-    $resFlow = $this->resourceflow();
-    if(!$resFlow) return false;
-    return $resFlow->getNextAuditUsers();
+      if(!$this->resourceflow) return false;
+    return $this->resourceflow->getNextAuditUsers();
   }
 
     public function getNextNode(){
-      $resFlow = $this->resourceflow();
-      if(!$resFlow) return false;
-        return $resFlow->getNextNode();
+        if(!$this->resourceflow) return false;
+        return $this->resourceflow->getNextNode();
     }
 
     public function getCurrentNode(){
-      $resFlow = $this->resourceflow();
-      if(!$resFlow) return false;
-      return $resFlow->getCurrentNode();
+        if(!$this->resourceflow) return false;
+      return $this->resourceflow->getCurrentNode();
     }
 
     public function isMeAudit(){
-      $resFlow = $this->resourceflow();
-      if(!$resFlow) return false;
-        $myNode = $resFlow->getMyUnAuditResourceNode();
+        if(!$this->resourceflow) return false;
+        $myNode = $this->resourceflow->getMyUnAuditResourceNode();
       return $myNode != false;
     }
 
   public function agree($comment, $auditUsers, $title = null, $content = null){
-    $resFlow = $this->resourceflow();
-    if(!$resFlow) return false;
-    if($resFlow->comment('agreed',$comment, $title, $content)) {
+      if(!$this->resourceflow) return false;
+    if($this->resourceflow->comment('agreed',$comment, $title, $content)) {
       //go next node
       //if have not next resource node ,to go next node
-      $unauditedNode = $resFlow->getAnotherUnAuditResourceNode();
+      $unauditedNode = $this->resourceflow->getAnotherUnAuditResourceNode();
       if(!$unauditedNode || $unauditedNode->count()<=0){
-        $resFlow->goNext();
+        $this->resourceflow->goNext();
       }
 
       if($auditUsers && $auditUsers->count()>0) {
-        $resFlow->setNextAuditUsers($auditUsers);
+        $this->resourceflow->setNextAuditUsers($auditUsers);
       }
       return true;
     }
@@ -123,9 +114,8 @@ trait HasFlowForResource
 
   public function disagree($callback, $comment, $title = null, $content = null){
     if($this->status() != 'proceed') return false;
-    $resFlow = $this->resourceflow();
-    if(!$resFlow) return false;
-    if($resFlow->comment('disagreed',$comment, $title, $content)) {
+      if(!$this->resourceflow) return false;
+    if($this->resourceflow->comment('disagreed',$comment, $title, $content)) {
       //run callback
       if ($callback) {
         return call_user_func($callback);
@@ -136,24 +126,21 @@ trait HasFlowForResource
   }
 
   public function shouldPublish(){
-    $resFlow = $this->resourceflow();
-    if(!$resFlow) return false;
-    if($resFlow->getAnotherUnAuditResourceNode() == false && $resFlow->getNextNode() == null){
+      if(!$this->resourceflow) return false;
+    if($this->resourceflow->getAnotherUnAuditResourceNode() == false && $this->resourceflow->getNextNode() == null){
       return true;
     }
     return false;
   }
 
   public function discard(){
-    $resFlow = $this->resourceflow();
-    if(!$resFlow) return false;
-    return $resFlow->discard();
+      if(!$this->resourceflow) return false;
+    return $this->resourceflow->discard();
   }
 
   public function goFirst(){
-    $resFlow = $this->resourceflow();
-    if(!$resFlow) return false;
-    return $resFlow->goFirst();
+      if(!$this->resourceflow) return false;
+    return $this->resourceflow->goFirst();
   }
 
   /**
@@ -174,9 +161,8 @@ trait HasFlowForResource
   public function getAuditByTimeLine(){
     $auditsByDate = array();
     $flow = $this->flow();
-    $resFlow = $this->resourceflow();
-    if(!$resFlow) return false;
-    $nodes = $resFlow->resourcenodes()->get();
+      if(!$this->resourceflow) return false;
+    $nodes = $this->resourceflow->resourcenodes()->get();
     foreach ($nodes as $node) {
       $username = $node->user()->first()->username;
       if(isset($node->user()->first()->last_name) && isset($node->user()->first()->first_name)) {
@@ -197,4 +183,21 @@ trait HasFlowForResource
     return $auditsByDate;
   }
 
+    public static function getCompletedList(){
+        $cModel = get_called_class();
+
+        return $cModel::whereHas('resourceflow', function($query)
+        {
+            $query->where('status', '=', 'completed');
+        });
+    }
+
+    public static function getAuditList(){
+        $cModel = get_called_class();
+
+        return $cModel::whereHas('resourceflow', function($query)
+        {
+            $query->where('status', '=', 'proceed');
+        });
+    }
 }

@@ -13,5 +13,9 @@ return array(
   'cancel' => '取消',
   'ok' => '确定',
   'return' => '返回',
-  'save' => '保存'
+  'save' => '保存',
+
+    'show_all'=>'查看所有',
+    'show_audit'=>'待审核',
+    'show_completed'=>'已发布'
 );
