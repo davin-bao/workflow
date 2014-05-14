@@ -43,13 +43,15 @@
               <div class="span6">
 
                 <ul class="list-inline">
-                  @foreach ($nextAuditUsers as $user)
-                  <li>
-                    <div class="checkbox user" data-id="{{{ $user->id }}}">
-                      <label><input type="checkbox" style="margin: 0px;" name="audit_users[]" value="{{{ $user->id }}}"> {{{ $user->username }}}</label>
-                    </div>
-                  </li>
-                  @endforeach
+                  @if ($nextAuditUsers)
+                    @foreach ($nextAuditUsers as $user)
+                    <li>
+                        <div class="checkbox user" data-id="{{{ $user->id }}}">
+                            <label><input type="checkbox" style="margin: 0px;" name="audit_users[]" value="{{{ $user->id }}}"> {{{ $user->username }}}</label>
+                        </div>
+                    </li>
+                    @endforeach
+                  @endif
                 </ul>
               </div>
             </div>

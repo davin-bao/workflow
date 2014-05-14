@@ -38,8 +38,8 @@ trait HasFlowForResource
 
   public function bindingFlow($flow_id){
     $resFlows = WorkFlowResourceflow::where('flow_id','=',$flow_id)->where('resource_id','=',$this->id)->get();
-    if($resFlows->count()<=0){
-      $resFlow = new WorkFlowResourceflow;
+    if(!$resFlows || $resFlows->count()<=0){
+      $resFlow = new WorkFlowResourceflow();
       $resFlow->flow_id = $flow_id;
       $resFlow->resource_type = Flow::find($flow_id)->resource_type;
       $resFlow->resource_id = $this->id;
