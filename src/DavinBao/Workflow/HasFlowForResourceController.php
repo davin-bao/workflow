@@ -15,9 +15,10 @@ trait HasFlowForResourceController
   public function getBindingFlow($entry){
     //get entry's object name
     //
+    $flow_type = lcfirst(get_class($entry));
     if ( $entry->id )
     {
-      $flows = $entry->getFlows($this->entryName);
+      $flows = $entry->getFlows($flow_type);
 
       //if this resource has binded flow, go to audit flow
       if($entry->isBindingFlow()){
