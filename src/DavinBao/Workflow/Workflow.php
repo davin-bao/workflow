@@ -63,9 +63,9 @@ class Workflow
     return $this->_app['view']->make( 'workflow::flow_form', compact( 'flow', 'roles') );
   }
 
-  public function makeFlowGraph($flow = null, $orderID = 0)
+  public function makeFlowGraph($flow = null, $orderID = 0, $status)
   {
-    return $this->_app['view']->make( 'workflow::flow_graph', compact( 'flow', 'orderID') );
+    return $this->_app['view']->make( 'workflow::flow_graph', compact( 'flow', 'orderID', 'status') );
   }
 
   public function makeBindingFlowForm($flows = array(), $entry = null)

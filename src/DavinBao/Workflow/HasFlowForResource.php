@@ -23,7 +23,8 @@ trait HasFlowForResource
     $resourceType = lcfirst(get_class($this)).'s';
     if(!$this->resourceFlow){
 
-      $this->resourceFlow = $this->hasOne('Resourceflow', 'resource_id');  //WorkFlowResourceflow::where('resource_id','=',$this->id)->where('resource_type', '=',$resourceType)->first();
+      $this->resourceFlow = $this->morphOne('DavinBao\Workflow\WorkFlowResourceflow', 'resource');
+      //WorkFlowResourceflow::where('resource_id','=',$this->id)->where('resource_type', '=',$resourceType); //$this->hasOne('Resourceflow', 'resource_id');
     }
     return $this->resourceFlow;
   }
@@ -33,7 +34,7 @@ trait HasFlowForResource
   }
 
   public function isBindingFlow() {
-    return $this->resourceflow() != false;
+    return $this->resourceflow != null;
   }
 
   public function bindingFlow($flow_id){
@@ -41,7 +42,7 @@ trait HasFlowForResource
     if(!$resFlows || $resFlows->count()<=0){
       $resFlow = new WorkFlowResourceflow();
       $resFlow->flow_id = $flow_id;
-      $resFlow->resource_type = Flow::find($flow_id)->resource_type;
+      $resFlow->resource_type = WorkFlowFlow::find($flow_id)->resource_type;
       $resFlow->resource_id = $this->id;
       $resFlow->save();
     }
@@ -163,9 +164,11 @@ trait HasFlowForResource
     $flow = $this->flow();
       if(!$this->resourceflow) return false;
     $nodes = $this->resourceflow->resourcenodes()->get();
+
     foreach ($nodes as $node) {
       $username = $node->user()->first()->username;
-      if(isset($node->user()->first()->last_name) && isset($node->user()->first()->first_name)) {
+      if(isset($node->user()->first()->last_name) && isset($node->user()->first()->first_name)
+        && (($node->user()->first()->last_name!='') || ($node->user()->first()->first_name!=''))) {
         $username = $node->user()->first()->last_name.' '.$node->user()->first()->first_name;
       }
 
@@ -174,11 +177,12 @@ trait HasFlowForResource
         $nodename = $flow->nodes()->where('orders','=',$node->orders)->first()->node_name;
       }
 
-      $auditsByDate[$node->updated_at->toDateString()][$node->updated_at->format('H:i')]['id'] = $node->id;
-      $auditsByDate[$node->updated_at->toDateString()][$node->updated_at->format('H:i')]['username'] = $username;
-      $auditsByDate[$node->updated_at->toDateString()][$node->updated_at->format('H:i')]['nodename'] = $nodename;
-      $auditsByDate[$node->updated_at->toDateString()][$node->updated_at->format('H:i')]['result'] = $node->result;
-      $auditsByDate[$node->updated_at->toDateString()][$node->updated_at->format('H:i')]['comment'] = $node->comment;
+      $auditsByDate[$node->updated_at->toDateString()][$node->id]['id'] = $node->id;
+      $auditsByDate[$node->updated_at->toDateString()][$node->id]['username'] = $username;
+      $auditsByDate[$node->updated_at->toDateString()][$node->id]['nodename'] = $nodename;
+      $auditsByDate[$node->updated_at->toDateString()][$node->id]['result'] = $node->result;
+      $auditsByDate[$node->updated_at->toDateString()][$node->id]['comment'] = $node->comment;
+      $auditsByDate[$node->updated_at->toDateString()][$node->id]['updated_at'] = $node->updated_at->format('H:i');
     }
     return $auditsByDate;
   }
@@ -197,7 +201,7 @@ trait HasFlowForResource
 
         return $cModel::whereHas('resourceflow', function($query)
         {
-            $query->where('status', '=', 'proceed');
+            $query->whereIn('status', array('proceed','unstart'));
         });
     }
 }

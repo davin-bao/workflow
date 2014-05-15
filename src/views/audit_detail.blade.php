@@ -22,7 +22,7 @@
         <i class="fa fa-comments bg-yellow"></i>
         @endif
         <div class="timeline-item">
-          <span class="time"><i class="fa fa-clock-o"></i>{{{ $ikey }}}</span>
+          <span class="time"><i class="fa fa-clock-o"></i>{{{ $item['updated_at'] }}}</span>
 
           <h3 class="timeline-header"><a href="#">{{{ $item['username'] }}}</a> {{{ $item['nodename'] }}}
             @if ($item['result'] == 'agreed')
@@ -51,6 +51,9 @@
         <i class="fa fa-clock-o"></i>
       </li>
     </ul>
+    <span class="label label-danger" style="margin-left: 75px;margin-top: -24px;float: left;">
+      @if ($entry->status() != '') {{{ Lang::get('workflow::workflow.'.$entry->status()) }}} @endif
+    </span>
     @endif
   </div>
   <!-- /.col -->

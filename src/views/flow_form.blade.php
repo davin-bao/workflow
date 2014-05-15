@@ -171,6 +171,18 @@ $('input[name="flow_name"]').focusout(function(){
 });
 
 $('button[name="flow_save"]').click(function(){
+  saveFlow(function(data){
+    $('button[name="flow_save"]').removeClass('disabled')
+      .addClass('disabled')
+      .html('<i class="fa fa-check"></i>'+data.message);
+    $('button[name="flow_save"]').attr('data-url', "{{ URL::to('admin/flows') }}/"+ data.id  + "/edit");
+    $('input[name="flow_id"]').val(data.id);
+    $('.tab-content label[for="node"]').parent().removeClass('hidden').fadeIn();
+    showSuccessMsg(data.message);
+  });
+});
+
+function saveFlow(callback){
     var node_ids = [];
     $('.todo-list li').each(function(){
         node_ids.push($(this).find('div').attr('data-id'));
@@ -178,7 +190,7 @@ $('button[name="flow_save"]').click(function(){
     console.log(node_ids);
     var flow_name = $('input[name="flow_name"]').val();
     var resource_type = $('select[name="resource_type"]').val();
-    var saveUrl = $(this).attr('data-url');
+    var saveUrl = $('button[name="flow_save"]').attr('data-url');
     $.ajax({
         url: saveUrl,
         data: { flow_name: flow_name,resource_type: resource_type, node_ids: node_ids },
@@ -186,18 +198,12 @@ $('button[name="flow_save"]').click(function(){
         dataType : "json"
     }).done(function( data ) {
         if(data.result){
-            $('button[name="flow_save"]').removeClass('disabled')
-                .addClass('disabled')
-                .html('<i class="fa fa-check"></i>'+data.message);
-            $('button[name="flow_save"]').attr('data-url', "{{ URL::to('admin/flows') }}/"+ data.id  + "/edit");
-            $('input[name="flow_id"]').val(data.id);
-            $('.tab-content label[for="node"]').parent().removeClass('hidden').fadeIn();
-            showSuccessMsg(data.message);
+          callback(data);
         }else{
             showErrorMsg(data.message);
         }
     });
-});
+};
 
 $('#node-add').click(function(){
     $('.todo-list .loading').remove();
@@ -305,9 +311,11 @@ function saveNode(id){
             $('#newModal').modal('hide');
             getNode(id, function(data) {
                 if(data.result){
-                    $('.todo-list .loading').parent('li').after(getNodeList(data.id, data.node_name, data.userstr, data.rolestr));
-                    $('.todo-list .loading').parent('li').remove();
-                    addModifyNodeEvent(data.id);
+                    saveFlow(function(tmp_data){
+                      $('.todo-list .loading').parent('li').after(getNodeList(data.id, data.node_name, data.userstr, data.rolestr));
+                      $('.todo-list .loading').parent('li').remove();
+                      addModifyNodeEvent(data.id);
+                    });
                 }else{
                     showModalErrorMsg(data.message);
                 }

@@ -65,6 +65,11 @@ class WorkFlowResourceflow extends Ardent
     return $this->hasMany(static::$app['config']->get('workflow::resourcenode'), 'resourceflow_id');
   }
 
+  public function resource()
+  {
+    return $this->morphTo();
+  }
+
    public  function getCurrentNode(){
        return $this->flow()->first()->nodes()->where('orders','=', $this->node_orders)->first();
    }
@@ -102,6 +107,7 @@ class WorkFlowResourceflow extends Ardent
 
   public function getNextNode(){
     $nextOrder = (int)$this->node_orders + 1;
+
     $nextNode = \DB::table(static::$app['config']->get('workflow::nodes_table').' AS nodes')
       ->join(static::$app['config']->get('workflow::flows_table').' AS flows', 'flows.id', '=', 'nodes.flow_id')
       ->join(static::$app['config']->get('workflow::resourceflow_table').' AS resourceflows', 'flows.id', '=', 'resourceflows.flow_id')
@@ -120,6 +126,7 @@ class WorkFlowResourceflow extends Ardent
     $nextAuditUsers = new Collection();
 
     $unauditedNode = $this->getAnotherUnAuditResourceNode();
+
     // if this node is not finished(need another persion audit), return null array
     if($unauditedNode && $unauditedNode->count()>0){
       return $nextAuditUsers;

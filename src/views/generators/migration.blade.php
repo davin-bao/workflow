@@ -27,7 +27,7 @@ class WorkflowSetupTables extends Migration {
             $table->increments('id')->unsigned();
             $table->string('node_name');
             $table->integer('flow_id')->unsigned();
-            $table->integer('orders')->unsigned();
+            $table->integer('orders')->unsigned()->default(1);
             $table->timestamps();
             $table->foreign('flow_id')->references('id')->on('flows');
         });

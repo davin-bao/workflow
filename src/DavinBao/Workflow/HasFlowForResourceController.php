@@ -18,6 +18,7 @@ trait HasFlowForResourceController
     if ( $entry->id )
     {
       $flows = $entry->getFlows($this->entryName);
+
       //if this resource has binded flow, go to audit flow
       if($entry->isBindingFlow()){
         return \Redirect::to('admin/'.$this->entryName.'/' . $entry->id . '/audit');
@@ -50,6 +51,7 @@ trait HasFlowForResourceController
     if( $entry->id ){
       $nextAuditUsers = $entry->getNextAuditUsers();
       $currentNode = $entry->getCurrentNode();
+
       //if auditUsers is one person and this entry unstart, auto audited it
       if(count($nextAuditUsers)==1 && $entry->status() == 'unstart'){
         $result = $entry->startFlow($nextAuditUsers, $entry->getLogTitle(), $entry->getLogContent());
