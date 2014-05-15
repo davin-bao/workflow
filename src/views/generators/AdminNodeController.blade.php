@@ -94,7 +94,7 @@ class AdminNodeController extends AdminController {
         return \View::make(\Config::get('app.admin_template').'/Flows/show_log', compact('log','username','result'));
       }
     }
-    return Redirect::to('admin/infos')->with('error', Lang::get('workflow::workflow.does_not_exist'));
+    return Redirect::to('admin/flows')->with('error', Lang::get('workflow::workflow.does_not_exist'));
   }
 
 }

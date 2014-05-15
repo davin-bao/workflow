@@ -34,7 +34,7 @@ class AdminFlowController extends AdminController {
    */
   public function getCreate()
   {
-    $title = Lang::get('admin/infos/title.create');
+    $title = Lang::get('workflow::workflow.create');
     $roles = Role::with('users')->get();
     // Show the page
     return View::make(Config::get('app.admin_template').'/flows/create_edit', compact('title', 'roles'));
@@ -63,7 +63,7 @@ class AdminFlowController extends AdminController {
     if ( $flow->id )
     {
       $roles = Role::with('users')->get();
-      $title = Lang::get('admin/infos/title.create');
+      $title = Lang::get('workflow::workflow.create');
 
       // Show the page
       return View::make(Config::get('app.admin_template').'/flows/create_edit', compact('title', 'flow', 'roles'));

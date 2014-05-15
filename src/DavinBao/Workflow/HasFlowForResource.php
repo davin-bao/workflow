@@ -14,19 +14,12 @@ trait HasFlowForResource
 {
 
   public $isBinding = true;
-  private $resourceFlow = false;
   /**
    * Many-to-Many relations with Node
    */
   public function resourceflow()
   {
-    $resourceType = lcfirst(get_class($this)).'s';
-    if(!$this->resourceFlow){
-
-      $this->resourceFlow = $this->morphOne('DavinBao\Workflow\WorkFlowResourceflow', 'resource');
-      //WorkFlowResourceflow::where('resource_id','=',$this->id)->where('resource_type', '=',$resourceType); //$this->hasOne('Resourceflow', 'resource_id');
-    }
-    return $this->resourceFlow;
+    return $this->morphOne('DavinBao\Workflow\WorkFlowResourceflow', 'resource');
   }
 
   public function getFlows($resource_type){
