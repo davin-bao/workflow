@@ -146,7 +146,7 @@ trait HasFlowForResource
   public function beforeDelete( $forced = false )
   {
     try {
-      \DB::table(Config::get('workflow::resourceflow_table'))->where('resource_id', $this->id)->delete();
+        $this->resourceflow->delete();
     } catch(Execption $e) {}
 
     return true;

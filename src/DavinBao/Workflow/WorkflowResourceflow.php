@@ -235,8 +235,6 @@ class WorkFlowResourceflow extends Ardent
     return $this->save();
   }
 
-
-
   /**
    * Before delete all constrained foreign relations
    *
@@ -246,7 +244,9 @@ class WorkFlowResourceflow extends Ardent
   public function beforeDelete( $forced = false )
   {
     try {
-      \DB::table(static::$app['config']->get('workflow::resourcenode_table'))->where('resourceflow_id', $this->id)->delete();
+        $this->resourcenodes->each(function($node){
+            $node->delete();
+        });
     } catch(Execption $e) {}
 
     return true;

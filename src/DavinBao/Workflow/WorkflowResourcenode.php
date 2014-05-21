@@ -73,7 +73,6 @@ class WorkFlowResourcenode extends Ardent
     return false;
   }
 
-
   /**
    * Before delete all constrained foreign relations
    *
@@ -83,7 +82,7 @@ class WorkFlowResourcenode extends Ardent
   public function beforeDelete( $forced = false )
   {
     try {
-      \DB::table(Config::get('workflow::resourcelog_table'))->where('resourcenode_id', $this->id)->delete();
+      $this->resourceLog->delete();
     } catch(Execption $e) {}
 
     return true;
