@@ -146,7 +146,9 @@ trait HasFlowForResource
   public function beforeDelete( $forced = false )
   {
     try {
-        $this->resourceflow->delete();
+        if($this->resourceflow){
+            $this->resourceflow->delete();
+        }
     } catch(Execption $e) {}
 
     return true;

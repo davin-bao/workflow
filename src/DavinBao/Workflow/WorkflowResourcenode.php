@@ -82,7 +82,9 @@ class WorkFlowResourcenode extends Ardent
   public function beforeDelete( $forced = false )
   {
     try {
-      $this->resourceLog->delete();
+        if($this->resourceLog) {
+            $this->resourceLog->delete();
+        }
     } catch(Execption $e) {}
 
     return true;

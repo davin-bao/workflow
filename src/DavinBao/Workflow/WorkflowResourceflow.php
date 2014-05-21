@@ -244,9 +244,12 @@ class WorkFlowResourceflow extends Ardent
   public function beforeDelete( $forced = false )
   {
     try {
-        $this->resourcenodes->each(function($node){
-            $node->delete();
-        });
+
+        if($this->resourcenodes){
+            $this->resourcenodes->each(function($node){
+                $node->delete();
+            });
+        }
     } catch(Execption $e) {}
 
     return true;
