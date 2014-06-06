@@ -53,7 +53,7 @@ class WorkFlowFlow extends Ardent
    */
   public function nodes()
   {
-    return $this->hasMany(static::$app['config']->get('workflow::node'))->orderBy('orders');
+    return $this->hasMany(static::$app['config']->get('workflow::node'), 'flow_id')->orderBy('orders');
   }
 
   /**

@@ -29,7 +29,7 @@ return array(
 
 
   'resource_type' => array(
-    '"Info"', '"Recruit"'
+    '"Info"', '"Recruit"', '"SendDocument"'
   ),
 
   /*
