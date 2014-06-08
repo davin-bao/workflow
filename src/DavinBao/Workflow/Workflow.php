@@ -63,7 +63,7 @@ class Workflow
     return $this->_app['view']->make( 'workflow::flow_form', compact( 'flow', 'roles') );
   }
 
-  public function makeFlowGraph($flow = null, $orderID = 0, $status)
+  public function makeFlowGraph($flow = null, $orderID = 0, $status='completed')
   {
     return $this->_app['view']->make( 'workflow::flow_graph', compact( 'flow', 'orderID', 'status') );
   }

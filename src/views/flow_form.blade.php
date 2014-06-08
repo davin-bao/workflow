@@ -123,11 +123,7 @@
                                     <li>
                                         <div class="checkbox user" data-id="{{{ $user->id }}}">
                                             <label><input type="checkbox" style="margin: 0px;" value="">
-                                              @if(($user->last_name != '') || ($user->first_name!=''))
-                                              {{{ $user->last_name.' '.$user->first_name }}}
-                                              @else
-                                              {{{ $user->username }}}
-                                              @endif
+                                              {{{ $user->name() }}}
                                             </label>
                                         </div>
                                     </li>
