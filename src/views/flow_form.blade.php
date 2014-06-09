@@ -108,7 +108,7 @@
                         <label class="span2 control-label" for="node_name">{{{ Lang::get("workflow::workflow.follower") }}}</label>
                         <ul class="nav nav-tabs">
                             @foreach ($roles as $role)
-                            <li><a href="#{{{ $role->name }}}" data-toggle="tab">{{{ $role->name }}}</a></li>
+                            <li><a href="#{{{ $role->name }}}" data-toggle="tab">{{{ $role->display_name }}}</a></li>
                             @endforeach
                         </ul>
                         <div class="tab-content">

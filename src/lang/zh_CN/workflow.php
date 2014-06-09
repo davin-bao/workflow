@@ -42,6 +42,7 @@ return array(
     'goback' => '上一个审核人重新审核',
     'discard' => '废弃',
     'publish' => '发布',
+    'archived' => '存档',
 
     'audit_info' => '审核信息',
     'show_log' => '查看日志',
