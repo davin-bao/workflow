@@ -52,6 +52,7 @@ trait HasFlowForResourceController
     if( $entry->id ){
       $nextAuditUsers = $entry->getNextAuditUsers();
       $currentNode = $entry->getCurrentNode();
+      $entryName = $this->entryName;
       //if auditUsers is one person and this entry unstart, auto audited it
       if(count($nextAuditUsers)==1 && $entry->status() == 'unstart'){
         $result = $entry->startFlow($nextAuditUsers, $entry->getLogTitle(), $entry->getLogContent());
@@ -61,7 +62,7 @@ trait HasFlowForResourceController
           return \Redirect::to('admin/'.$this->entryName.'/' . $entry->id . '/edit')->with('error', \Lang::get('workflow::workflow.action').\Lang::get('workflow::workflow.failed_unknown'));
         }
       }else {
-        return \View::make(\Config::get('app.admin_template').'/flows/audit', compact('entry','nextAuditUsers','currentNode'));
+        return \View::make(\Config::get('app.admin_template').'/flows/audit', compact('entry','entryName','nextAuditUsers','currentNode'));
       }
     } else {
       return \Redirect::to('admin/'.$this->entryName.'')->with('error', \Lang::get('admin/'.$this->entryName.'/messages.does_not_exist'));

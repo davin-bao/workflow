@@ -59,7 +59,11 @@
 
             <div class="form-group agree-buttons">
               <div class="span6 offset2">
-                <button type="submit" class="btn btn-success" name="submit" value="agree">@if($entry->shouldPublish()){{{ Lang::get('workflow::workflow.publish') }}}@else{{{ Lang::get('button.submit') }}}@endif</button>
+                  @if($entry->shouldPublish())
+                    <a href="#sureModal" class="btn btn-success" data-target="#sureModal" data-toggle="modal">{{{ Lang::get('workflow::workflow.publish') }}}</a>
+                  @else
+                    <button type="submit" class="btn btn-success" name="submit" value="agree">{{{ Lang::get('button.submit') }}}</button>
+                  @endif
               </div>
             </div>
           </div>
@@ -82,10 +86,36 @@
   <!-- ./ tabs content -->
 </div>
 
+
+<!-- Modal -->
+<div id="sureModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">{{{ Lang::get('workflow::workflow.publish') }}}</h3>
+            </div>
+            <div class="modal-body">
+                <p>确认发布该信息吗？</p>
+            </div>
+            <div class="modal-footer">
+                    <!-- CSRF Token -->
+                    <input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
+                    <input type="hidden" name="id" value="" />
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{{{ Lang::get('button.cancel') }}}</button>
+                    <button type="submit" class="ok btn btn-primary" name="submit" value ="agree">{{{ Lang::get('button.ok') }}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal End -->
+
 {{-- Scripts --}}
 @section('scripts')
 <script type="text/javascript">
   $(function () {
+
+
 
     //$('div.agree-buttons').hide();
 

@@ -101,8 +101,11 @@ class WorkFlowResourceflow extends Ardent
 
   public function getMyUnAuditResourceNode(){
     $userId = static::$app['auth']->user()->id;
+      //如果完成后再编辑，则应获取result ＝＝ ‘agreed‘
+      $getNodeStatus = 'unaudited';
+     if($this->status == 'completed') $getNodeStatus = 'agreed';
     return $this->resourcenodes()->where('user_id','=', $userId)
-      ->where('result','=','unaudited')->first();
+      ->where('result','=',$getNodeStatus)->orderby('orders','desc')->first();
   }
 
   public function getNextNode(){
@@ -121,6 +124,11 @@ class WorkFlowResourceflow extends Ardent
     $node_instance = new $node_relition;
     return $node_instance::find($nextNode->id);
   }
+
+    public function getLastAuditUser(){
+        $node = $this->resourcenodes()->where('result','agreed')->orderby('orders', 'desc')->first();
+        return (!$node) ? null : $node->user;
+    }
 
   public function getNextAuditUsers(){
     $nextAuditUsers = new Collection();
@@ -165,9 +173,13 @@ class WorkFlowResourceflow extends Ardent
     if(!$currentResourceNode || $currentResourceNode->count()<=0){
       return false;
     }
+    //不能超过总流程节点数
+    $maxOrder = $this->flow()->first()->nodes()->count();
+    $orders = $this->node_orders > $maxOrder ? $maxOrder : $this->node_orders;
+
     $currentResourceNode->result = $result;
     $currentResourceNode->comment = $comment;
-    $currentResourceNode->orders = $this->node_orders;
+    $currentResourceNode->orders = $orders;
     $currentResourceNode->recordLog($title, $content);
     if($currentResourceNode->save()){
       return true;
@@ -209,6 +221,7 @@ class WorkFlowResourceflow extends Ardent
     $maxOrder = $this->flow()->first()->nodes()->count();
     if($nextNodeOrder > $maxOrder){
       $status = 'completed';
+      $nextNodeOrder = $maxOrder+1;
     }
     $this->node_orders = $nextNodeOrder;
     $this->status = $status;

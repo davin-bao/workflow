@@ -195,4 +195,10 @@ trait HasFlowForResource
             $query->whereIn('status', array('proceed','unstart'));
         });
     }
+
+    public function lastIsMe(){
+        $lastUser = $this->resourceflow->getLastAuditUser();
+        if($lastUser === null) return false;
+        return $lastUser->id == \Auth::user()->id;
+    }
 }
