@@ -125,7 +125,12 @@ class WorkFlowResourceflow extends Ardent
     return $node_instance::find($nextNode->id);
   }
 
+    /**
+     * 判断流程是否完结，并且当前用户结束该流程，则该用户有权限再编辑
+     * @return null
+     */
     public function getLastAuditUser(){
+        if($this->status !== 'completed') return null;
         $node = $this->resourcenodes()->where('result','agreed')->orderby('orders', 'desc')->first();
         return (!$node) ? null : $node->user;
     }

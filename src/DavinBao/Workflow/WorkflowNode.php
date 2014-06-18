@@ -81,6 +81,22 @@ class WorkFlowNode extends Ardent
         }
         return strlen($roleString)>0?$roleString.'...':'';
     }
+    //本人是否有权审批
+    public function isContainsMe(){
+        foreach($this->users as $user){
+            if($user->id = \Auth::user()->id){
+                return true;
+            }
+        }
+        foreach($this->roles as $role){
+            foreach($role->users as $user){
+                if($user->id = \Auth::user()->id){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
   /**
    * Before delete all constrained foreign relations

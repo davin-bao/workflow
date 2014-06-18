@@ -81,14 +81,39 @@ trait HasFlowForResource
       return $this->resourceflow->getCurrentNode();
     }
 
+    public function isFirstAudit(){
+        if($this->resourceflow->status == 'unstart' && $this->resourceflow->resourcenodes()->count()<=0){
+            return true;
+        }
+        return false;
+    }
+
     public function isMeAudit(){
         if(!$this->resourceflow) return false;
         $myNode = $this->resourceflow->getMyUnAuditResourceNode();
-      return $myNode != false;
+        if($myNode !== null){
+            return true;
+        }
+        if($this->isFirstAudit() && $this->create_user_id == \Auth::user()->id){
+            return true;
+        }
+
+        //下一节点，是否需要我来签字
+//        $cnode = $this->resourceflow->getCurrentNode();
+//        if($cnode){
+//            return $cnode->isContainsMe();
+//        }
+        return false;
     }
 
   public function agree($comment, $auditUsers, $title = null, $content = null){
-      if(!$this->resourceflow) return false;
+    if(!$this->resourceflow) return false;
+    //如果是创建时审批
+    if($this->isFirstAudit()){
+        //设置未审批人为创建人
+        $this->resourceflow->setNextAuditUsers(array($this->createUser));
+    }
+
     if($this->resourceflow->comment('agreed',$comment, $title, $content)) {
       //go next node
       //if have not next resource node ,to go next node
