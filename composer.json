@@ -1,6 +1,6 @@
 {
-    "name": "davin-bao/workflow",
-    "description": "this is a workflow package for laravel",
+    "name": "tao2581/workflow",
+    "description": "this is a workflow package for laravel5",
     "keywords": ["laravel","workflow"],
     "homepage": "https://github.com/davin-bao/workflow",
     "license": "MIT",
