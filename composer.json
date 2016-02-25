@@ -31,5 +31,5 @@
             "DavinBao\\Workflow\\": "src/"
         }
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "dev"
 }
