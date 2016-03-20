@@ -1,9 +1,11 @@
 Workflow (Laravel5 Package)
 ========
-This package is forked from davin-bao/workflow,I just modify some install configuration so that can be installed in Laravel5, and there may still be some errors, please consider clearfully. -- tao2581
---------
+
 
 Workflow package provides a simple way to add audit flow to **Laravel5**.
+
+This package is forked from davin-bao/workflow,I just modify some install configuration so that can be installed in Laravel5, and there may still be some errors, please consider clearfully. -- tao2581
+--------
 
 ## Quick start
 
