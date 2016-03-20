@@ -29,7 +29,8 @@ class MigrationCommand extends Command {
     {
         parent::__construct();
         $app = app();
-        $app['view']->addNamespace('workflow',substr(__DIR__,0,-8).'views');
+        // 目录错误 应该是父目录 -8 => -17
+        $app['view']->addNamespace('workflow',substr(__DIR__,0,-17).'views');
     }
 
 
@@ -77,7 +78,8 @@ class MigrationCommand extends Command {
      */
     protected function createMigration()
     {
-      $migration_file = $this->laravel->path."/database/migrations/".date('Y_m_d_His')."_workflow_setup_tables.php";
+        // migrations目录应该是根目录 app->path => base_pash
+      $migration_file = base_path()."/database/migrations/".date('Y_m_d_His')."_workflow_setup_tables.php";
       $app = app();
       $resource_type = '';
       if(is_array($app['config']->get('resource_type'))){
