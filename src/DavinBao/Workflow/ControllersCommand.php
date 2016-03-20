@@ -37,7 +37,7 @@ class ControllersCommand extends Command {
   {
     parent::__construct();
     $app = app();
-    $app['view']->addNamespace('workflow',substr(__DIR__,0,-8).'views');
+    $app['view']->addNamespace('workflow',substr(__DIR__,0,-17).'views');
   }
 
 
@@ -72,7 +72,7 @@ class ControllersCommand extends Command {
       }
       if( $result )
       {
-        $this->info( "app/controllers/admin/AdminFlowController.php and app/controllers/admin/AdminNodeController.php Patched successfully!" );
+        $this->info( "app/http/controllers/admin/AdminFlowController.php and app/controllers/admin/AdminNodeController.php Patched successfully!" );
       }
       else{
         $this->error(
@@ -96,12 +96,12 @@ class ControllersCommand extends Command {
   protected function appendControllers( $name = '' )
   {
     $app = app();
-    $data_dir = $this->laravel->path.'/controllers/admin';
-    $datas_file = $this->laravel->path."/controllers/admin/$name.php";
+    $data_dir = $this->laravel->path.'/Http/Controllers/Admin';
+    $datas_file = $this->laravel->path."/Http/Controllers/Admin/$name.php";
     $this->info( $datas_file );
     $workflow_datas = $app['view']->make('workflow::generators.'.$name)
       ->render();
-
+    $workflow_datas = str_replace("{{ '<?php' }}", '<?php', $workflow_datas);
       if (!file_exists($data_dir)) {
         mkdir($data_dir, 0777, true);
       }
