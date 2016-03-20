@@ -1,5 +1,4 @@
-This package is forked from davin-bao/workflow,I just modify some install configuration so that can be installed in Laravel5, and there may still be some errors, please consider clearfully. 
-	-- tao2581
+This package is forked from davin-bao/workflow,I just modify some install configuration so that can be installed in Laravel5, and there may still be some errors, please consider clearfully before use it. -- tao2581
 ------------------
 
 
