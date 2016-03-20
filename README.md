@@ -54,7 +54,7 @@ Now generate the Workflow migration
     $ php artisan workflow:migration
 
 It will generate the `<timestamp>_workflow_setup_tables.php` migration. You may now run it with the artisan migrate command:
-
+Open: `<timestamp>_workflow_setup_tables.php` change " {{ '<?php' }} " to  " <?php "
     $ php artisan migrate
 
 After the migration, workflow tables will be present.
