@@ -1,6 +1,6 @@
 {
-    "name": "davin-bao/workflow",
-    "description": "this is a workflow package for laravel",
+    "name": "tao2581/workflow",
+    "description": "this is a workflow package for laravel5",
     "keywords": ["laravel","workflow"],
     "homepage": "https://github.com/davin-bao/workflow",
     "license": "MIT",
@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "illuminate/support": "4.1.*",
+        "illuminate/support": "5.1.*",
         "laravelbook/ardent": "dev-master"
     },
     "autoload": {
@@ -31,5 +31,5 @@
             "DavinBao\\Workflow\\": "src/"
         }
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "dev"
 }

@@ -1,7 +1,11 @@
-Workflow (Laravel4 Package)
+This package is forked from davin-bao/workflow,I just modify some install configuration so that can be installed in Laravel5, and there may still be some errors, please consider clearfully before use it. -- tao2581
+------------------
+
+
+Workflow (Laravel5 Package)
 ========
 
-Workflow package provides a simple way to add audit flow to **Laravel4**.
+Workflow package provides a simple way to add audit flow to **Laravel5**.
 
 ## Quick start
 
@@ -50,7 +54,7 @@ Now generate the Workflow migration
     $ php artisan workflow:migration
 
 It will generate the `<timestamp>_workflow_setup_tables.php` migration. You may now run it with the artisan migrate command:
-
+Open: `<timestamp>_workflow_setup_tables.php` change " {{ '<?php' }} " to  " <?php "
     $ php artisan migrate
 
 After the migration, workflow tables will be present.

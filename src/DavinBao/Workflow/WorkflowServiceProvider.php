@@ -18,7 +18,7 @@ class WorkflowServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('davin-bao/workflow');
+		//$this->package('davin-bao/workflow');
 	}
 
 	/**

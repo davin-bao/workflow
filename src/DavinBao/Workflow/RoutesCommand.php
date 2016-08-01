@@ -37,7 +37,7 @@ class RoutesCommand extends Command {
   {
     parent::__construct();
     $app = app();
-    $app['view']->addNamespace('workflow',substr(__DIR__,0,-8).'views');
+    $app['view']->addNamespace('workflow',substr(__DIR__,0,-17).'views');
   }
 
 
@@ -51,7 +51,7 @@ class RoutesCommand extends Command {
     $name = $this->option('rout_name');
 
     $this->line('');
-    $this->info( "Routes file: app/routes.php" );
+    $this->info( "Routes file: app/http/routes.php" );
 
     $message = "A single route to handle every action in a RESTful controller".
         " will be appended to your routes.php file. This may be used with a workflow".
@@ -68,7 +68,7 @@ class RoutesCommand extends Command {
       $this->info( "Appending routes..." );
       if( $this->appendRoutes( $name ) )
       {
-        $this->info( "app/routes.php Patched successfully!" );
+        $this->info( "app/http/routes.php Patched successfully!" );
       }
       else{
         $this->error(
@@ -105,7 +105,7 @@ class RoutesCommand extends Command {
   protected function appendRoutes( $name = '' )
   {
     $app = app();
-    $routes_file = $this->laravel->path.'/routes.php';
+    $routes_file = $this->laravel->path.'/http/routes.php';
     $workflow_routes = $app['view']->make('workflow::generators.routes')
       ->with('name', $name)
       ->render();
