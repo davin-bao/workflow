@@ -2,7 +2,9 @@
 Workflow (Laravel5 Package)
 ========
 
-### thanks tao2581
+### thanks tao2581, If you need use to laravel 4, please add
+
+    "davin-bao/workflow": "v1.0"
 
 Workflow package provides a simple way to add audit flow to **Laravel5**.
 
