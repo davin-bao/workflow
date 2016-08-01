@@ -3,6 +3,8 @@ Workflow (Laravel4 Package)
 
 Workflow package provides a simple way to add audit flow to **Laravel4**.
 
+### If you want to get this package for Laravel5, you need switch the branch to master
+
 ## Quick start
 
 ### Required setup
