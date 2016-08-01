@@ -5,13 +5,15 @@ Workflow package provides a simple way to add audit flow to **Laravel4**.
 
 ### If you want to get this package for Laravel5, you need switch the branch to master
 
+    "davin-bao/workflow": "dev-master"
+
 ## Quick start
 
 ### Required setup
 
 In the `require` key of `composer.json` file add the following
 
-    "davin-bao/workflow": "dev-master"
+    "davin-bao/workflow": "v1.0"
 
 Run the Composer update comand
 
